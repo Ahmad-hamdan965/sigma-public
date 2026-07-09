@@ -1,0 +1,2013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIGMA XPRESS — Staff Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --red:#DC2430; --red-dark:#A81B24; --red-tint:#FDEBEC;
+    --navy:#0F2A4D; --navy2:#173C6B; --navy-tint:#EAF0F7;
+    --bg:#F5F6F8; --card:#FFFFFF; --line:#E6E8EC;
+    --text:#16202E; --text-mut:#6B7686;
+    --success:#1E9E5A; --success-tint:#E7F7EE;
+    --amber:#E5900A; --amber-tint:#FCF1DE;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:'Inter',sans-serif; background:var(--bg); color:var(--text);}
+  h1,h2,h3,.brand,button,.navitem{font-family:'Poppins',sans-serif;}
+
+  #setupScreen, #loginScreen{min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;}
+  .authCard{background:var(--card); border:1px solid var(--line); border-radius:18px; padding:36px; width:100%; max-width:380px; box-shadow:0 20px 50px rgba(15,42,77,.12);}
+  .brandRow{display:flex; align-items:center; gap:10px; justify-content:center; margin-bottom:6px;}
+  .mark{width:34px; height:22px; position:relative;}
+  .mark span{position:absolute; left:0; background:var(--red); border-radius:2px;}
+  .brandLogoImg{height:32px; width:auto; display:block;}
+
+  .brand{font-weight:800; font-size:19px; color:var(--navy); letter-spacing:.3px;}
+  .authSub{text-align:center; color:var(--text-mut); font-size:12.5px; margin-bottom:24px;}
+  label{display:block; font-size:12.5px; font-weight:600; color:var(--navy); margin:14px 0 5px;}
+  input, select, textarea{width:100%; border:1.5px solid var(--line); border-radius:10px; padding:10px 12px; font-size:14px; font-family:'Inter',sans-serif; background:#fff; color:var(--text);}
+  input:focus, select:focus, textarea:focus{outline:none; border-color:var(--navy2);}
+  .btn{border:none; border-radius:10px; padding:11px 16px; font-weight:700; font-size:13.5px; cursor:pointer; transition:.15s;}
+  .btn-primary{background:var(--red); color:#fff; width:100%; margin-top:18px;}
+  .btn-primary:hover{background:var(--red-dark);}
+  .btn-outline{background:#fff; border:1.5px solid var(--line); color:var(--navy);}
+  .btn-outline:hover{border-color:var(--navy2);}
+  .btn-success{background:var(--success); color:#fff;}
+  .helpText{font-size:11.5px; color:var(--text-mut); margin-top:6px; line-height:1.5;}
+  .errorMsg{background:var(--red-tint); color:var(--red-dark); font-size:12.5px; padding:10px 12px; border-radius:10px; margin-top:14px; display:none;}
+
+  #dashboard{display:none; min-height:100vh;}
+  .shell{display:flex; min-height:100vh;}
+  .sidebar{width:230px; background:var(--navy); color:#fff; flex:none; padding:24px 16px; display:flex; flex-direction:column; position:sticky; top:0; height:100vh; overflow:hidden;}
+  .sidebar .brandRow{justify-content:flex-start; margin-bottom:6px; flex:none;}
+  .sidebar .brand{color:#fff; font-size:16px;}
+  .roleTag{color:#C7D3E4; font-size:11px; margin-bottom:22px; text-transform:capitalize;}
+  .navitem{padding:11px 12px; border-radius:10px; font-size:13.5px; font-weight:600; color:#C7D3E4; margin-bottom:4px; cursor:pointer; border:none; background:none; text-align:left; width:100%; display:flex; align-items:center; gap:8px;}
+  .navitem:hover{background:rgba(255,255,255,.08); color:#fff;}
+  .navitem.active{background:var(--red); color:#fff;}
+  .sidebar-footer{margin-top:auto; flex:none;}
+  #navList{overflow-y:auto; flex:1; min-height:0; padding-right:2px;}
+  .roleTag{flex:none;}
+  .logoutBtn{background:rgba(255,255,255,.08); color:#fff; border:none; border-radius:10px; padding:10px 12px; width:100%; font-size:12.5px; font-weight:600; cursor:pointer;}
+  .logoutBtn:hover{background:rgba(255,255,255,.16);}
+
+  .main{flex:1; padding:32px 36px; max-width:1150px;}
+  .pageHead{display:flex; justify-content:space-between; align-items:center; margin-bottom:22px;}
+  .pageHead h1{font-size:20px; color:var(--navy); font-weight:800;}
+
+  table{width:100%; border-collapse:collapse; background:var(--card); border-radius:14px; overflow:hidden; border:1px solid var(--line);}
+  th{text-align:left; font-size:11.5px; color:var(--text-mut); padding:12px 14px; background:var(--navy-tint); font-weight:700;}
+  td{padding:12px 14px; border-top:1px solid var(--line); font-size:13.5px; vertical-align:top;}
+  tr:hover td{background:#FAFBFC;}
+
+  .badge{font-size:10.5px; font-weight:700; padding:4px 10px; border-radius:999px; display:inline-block;}
+  .badge.amber{background:var(--amber-tint); color:var(--amber);}
+  .badge.success{background:var(--success-tint); color:var(--success);}
+  .badge.red{background:var(--red-tint); color:var(--red-dark);}
+  .badge.neutral{background:var(--navy-tint); color:var(--navy2);}
+
+  .card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:20px; margin-bottom:20px;}
+  .cardTitle{font-weight:700; color:var(--navy); font-size:14px; margin-bottom:14px;}
+  .formGrid{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  .formGrid .full{grid-column:1 / -1;}
+  .rowActions{display:flex; gap:8px; margin-top:16px; flex-wrap:wrap;}
+
+  .statRow{display:flex; gap:14px; margin-bottom:20px; flex-wrap:wrap;}
+  .stat{flex:1; min-width:150px; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px;}
+  .stat b{font-size:20px; color:var(--navy); display:block; font-family:'Poppins';}
+  .stat span{font-size:11.5px; color:var(--text-mut);}
+
+  .emptyState{color:var(--text-mut); font-size:13px; padding:24px; text-align:center;}
+  .toast{position:fixed; bottom:24px; right:24px; background:var(--navy); color:#fff; padding:12px 18px; border-radius:10px; font-size:13px; font-weight:600; box-shadow:0 10px 30px rgba(0,0,0,.2); display:none; z-index:50;}
+  .toast.error{background:var(--red-dark);}
+  .smallMuted{color:var(--text-mut); font-size:12px;}
+  .inlineSelect{padding:6px 8px; font-size:12.5px; border-radius:8px;}
+  .permNote{background:var(--navy-tint); color:var(--navy2); font-size:12px; padding:12px 14px; border-radius:10px; margin-bottom:18px;}
+  .langRow{display:flex; gap:6px;}
+  .langChip{border:1.5px solid var(--line); background:#fff; color:var(--navy); font-size:11px; font-weight:700; padding:5px 10px; border-radius:999px; cursor:pointer; font-family:'Inter',sans-serif;}
+  .langChip.active{background:var(--navy); border-color:var(--navy); color:#fff;}
+  .sidebar .langRow{margin-top:14px; margin-bottom:10px;}
+  .sidebar .langChip{border-color:rgba(255,255,255,.25); background:transparent; color:#C7D3E4;}
+  .sidebar .langChip.active{background:var(--red); border-color:var(--red); color:#fff;}
+</style>
+</head>
+<body>
+
+<div id="setupScreen">
+  <div class="authCard">
+    <div class="brandRow"><img class="brandLogoImg" alt="SIGMA XPRESS" /><div class="brand">SIGMA XPRESS</div></div>
+    <div class="authSub" id="setupSubtitle">Staff Dashboard Setup</div>
+    <label id="setupLabel">Backend API address</label>
+    <input id="apiUrlInput" placeholder="https://your-backend-address.com" />
+    <div class="helpText">Saved in this browser only — you'll only re-enter it if the address changes.</div>
+    <button class="btn btn-primary" id="setupContinueBtn" onclick="saveApiUrl()">Continue</button>
+    <div class="errorMsg" id="setupError"></div>
+    <div class="langRow" style="justify-content:center; margin-top:18px;"></div>
+  </div>
+</div>
+
+<div id="loginScreen" style="display:none">
+  <div class="authCard">
+    <div class="brandRow"><img class="brandLogoImg" alt="SIGMA XPRESS" /><div class="brand">SIGMA XPRESS</div></div>
+    <div class="authSub" id="loginSubtitle">Staff sign in</div>
+    <label id="loginUsernameLabel">Username</label>
+    <input id="loginUsername" placeholder="e.g. admin, sales1, accountant1..." autocomplete="username" />
+    <label id="loginPasswordLabel">Password</label>
+    <input id="loginPassword" type="password" placeholder="••••••••" autocomplete="current-password" />
+    <button class="btn btn-primary" id="loginSubmitBtn" onclick="doLogin()">Log In</button>
+    <div class="errorMsg" id="loginError"></div>
+    <div class="helpText" id="changeBackendLink" style="text-align:center; margin-top:14px; cursor:pointer;" onclick="showSetup()">Change backend address</div>
+    <div class="langRow" style="justify-content:center; margin-top:18px;"></div>
+  </div>
+</div>
+
+<div id="dashboard">
+
+  <div class="shell">
+    <div class="sidebar">
+      <div class="brandRow"><img class="brandLogoImg" alt="SIGMA XPRESS" /><div class="brand">SIGMA XPRESS</div></div>
+      <div class="roleTag" id="roleTag"></div>
+      <div id="navList"></div>
+      <div class="sidebar-footer">
+        <div class="langRow"></div>
+        <button class="logoutBtn" id="sidebarLogoutBtn" onclick="doLogout()">Log Out</button>
+      </div>
+    </div>
+    <div class="main" id="mainContent"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   SIGMA XPRESS — Staff Dashboard (single file, no build step)
+   Role-aware: super_admin / sales / accountant / warehouse
+   ============================================================ */
+
+let API_URL = localStorage.getItem('sigmaApiUrl') || 'https://sigma-31hr.onrender.com';
+let accessToken = localStorage.getItem('sigmaAccessToken') || '';
+let refreshToken = localStorage.getItem('sigmaRefreshToken') || '';
+let currentUser = JSON.parse(localStorage.getItem('sigmaUser') || 'null');
+
+const NAV_ITEMS = [
+  { key:'receiving',     label:'📥 Receiving',        roles:['super_admin','warehouse'] },
+  { key:'shipments',     label:'📦 Shipments',       roles:['super_admin','sales','warehouse','accountant'] },
+  { key:'customers',     label:'👥 Customers',       roles:['super_admin','sales'] },
+  { key:'invoices',      label:'🧾 Invoices',        roles:['super_admin','accountant'] },
+  { key:'purchases',     label:'💰 Purchases',       roles:['super_admin','accountant'] },
+  { key:'expenses',      label:'💸 Expenses',        roles:['super_admin','accountant'] },
+  { key:'quotes',        label:'💬 Quote Requests',  roles:['super_admin','sales'] },
+  { key:'services',      label:'🛠️ Services',        roles:['super_admin','sales'] },
+  { key:'offers',        label:'🎁 Offers',          roles:['super_admin','sales'] },
+  { key:'notifications', label:'🔔 Notifications',   roles:['super_admin','sales'] },
+  { key:'reports',       label:'📊 Reports',         roles:['super_admin','accountant'] },
+  { key:'employees',     label:'🧑\u200d💼 Employees',    roles:['super_admin'] },
+  { key:'warehouse',     label:'📍 Warehouse',       roles:['super_admin','warehouse'] },
+];
+
+function canSee(page){ return currentUser && NAV_ITEMS.find(n => n.key === page)?.roles.includes(currentUser.role); }
+
+// Permission check for individually-customizable actions (independent of role).
+// super_admin always has every permission; everyone else needs it explicitly
+// granted on their account (set when the employee was created, editable after).
+function hasPerm(perm){
+  if (!currentUser) return false;
+  if (currentUser.role === 'super_admin') return true;
+  return (currentUser.permissions || []).includes(perm);
+}
+
+let currentPage = 'shipments';
+
+/* ---------- i18n (phase 1: nav, auth screens, page titles, common buttons) ---------- */
+const DASH_TRANSLATIONS = {
+  en: {
+    setup_title: 'Staff Dashboard Setup', setup_label: 'Backend API address', setup_continue: 'Continue',
+    login_title: 'Staff sign in', login_username: 'Username', login_password: 'Password', login_submit: 'Log In',
+    login_change_backend: 'Change backend address',
+    nav_shipments: '📦 Shipments', nav_customers: '👥 Customers', nav_invoices: '🧾 Invoices',
+    nav_quotes: '💬 Quote Requests', nav_services: '🛠️ Services', nav_offers: '🎁 Offers',
+    nav_notifications: '🔔 Notifications', nav_reports: '📊 Reports', nav_employees: '🧑\u200d💼 Employees', nav_warehouse: '📍 Warehouse',
+    logout: 'Log Out', language: 'Language',
+    page_shipments: 'Shipments', page_customers: 'Customers', page_invoices: 'Invoices',
+    page_quotes: 'Quote Requests', page_services: 'Services', page_offers: 'Offers',
+    page_notifications: 'Push Notifications', page_reports: 'Reports', page_employees: 'Employees', page_warehouse: 'Warehouse Address',
+ 
+    common_save: 'Save', common_add: 'Add', common_create: 'Create', common_send: 'Send',
+    common_view: 'View', common_download: 'Download', common_change_to: 'Change to…',
+    common_sea: 'Sea', common_air: 'Air', common_land: 'Land', common_full: 'Full', common_partial: 'Partial',
+    common_customer: 'Customer', common_status: 'Status', common_actions: 'Actions', common_amount: 'Amount',
+    common_currency: 'Currency', common_type: 'Type', common_name: 'Name', common_username: 'Username',
+    common_password: 'Password', common_phone: 'Phone', common_email_optional: 'Email (optional)',
+    common_role: 'Role', common_optional: 'optional',
+    badge_active: 'active', badge_disabled: 'disabled', badge_due: 'Due', badge_paid: 'Paid', badge_overdue: 'Overdue',
+    badge_pending: 'Pending', badge_quoted: 'Quoted', badge_rejected: 'Rejected',
+
+    ship_receive_title: 'Receive New Shipment (China Warehouse)',
+    ship_code: 'Shipment Code', ship_freight_type: 'Freight Type', ship_load_type: 'Load Type',
+    ship_origin: 'Origin', ship_destination: 'Destination',
+    ship_weight_required: 'Weight (kg) — required', ship_volume_required: 'Volume (CBM) — required',
+    ship_packages: 'Packages', ship_reference_label: 'Receiving Reference #',
+    ship_reference_hint: '(China internal tracking #, vehicle plate, or factory #)',
+    ship_warehouse: 'Warehouse (received at)', ship_no_warehouses: 'No warehouses set up yet — add one on the Warehouse page first.',
+    ship_items_title: 'Customers & Goods in this Shipment', ship_add_customer_row: '+ Add Another Customer',
+    ship_remove_row: 'Remove', ship_category: 'Category', ship_description: 'Description (optional)',
+    ship_manage_categories: 'Goods Categories', ship_new_category_placeholder: 'New category name (e.g. Fragile)',
+    ship_add_category: '+ Add', ship_th_customers: 'Customers', ship_view_items: 'View / Manage Items',
+    ship_no_categories: 'No categories yet — add one below.', ship_add_item_title: 'Add Another Customer to This Shipment',
+    ship_add_item_btn: '+ Add to Shipment',
+    perm_invoices_override: 'Edit Finalized Invoices (special)',
+    ship_pricing_title: 'Price Each Customer', ship_price_btn: 'Price', ship_priced_badge: 'Priced',
+    ship_not_priced_badge: 'Not Priced', ship_finalize_btn: 'Finalize & Issue Invoices',
+    ship_finalize_hint: "Once every customer below is priced, this issues each one's real invoice — locked from further changes afterward without special permission.",
+    ship_finalized_badge: 'Invoices Finalized', ship_finalized_note: "This shipment's invoices have been issued. Its financial data now lives in Reports.",
+    ship_close_btn: 'Close Shipment', ship_closed_badge: 'Closed',
+    price_unit_type: 'Bill By', price_flat: 'Flat Amount', price_extra_desc: 'Extra Charge Description (optional)',
+    price_extra_amount: 'Extra Charge Amount (optional)', price_save_btn: 'Save Price', price_modal_title: 'Price Customer Goods',
+    inv_locked_note: 'This invoice was issued from a finalized shipment and can no longer be edited here.',
+    ship_log_receipt_btn: '📥 Log Receipt & Create Shipment',
+    ship_view_only_note: 'You have view access to shipments. Only Warehouse staff log new shipments as they\'re received.',
+    ship_th_code: 'Code', ship_th_customer: 'Customer', ship_th_type: 'Type',
+    ship_th_weight_volume: 'Weight / Volume', ship_th_status: 'Current Status', ship_th_actions: 'Actions',
+    ship_view_only: 'View only', ship_no_shipments: 'No shipments yet.',
+    ship_status_placeholder: 'New status text...',
+
+    cust_create_title: 'Create New Customer Login',
+    cust_link_note: 'This customer will be linked to you as their sales rep for reporting.',
+    cust_full_name: 'Full Name', cust_address: 'Address', cust_address_placeholder: 'Customer\'s address',
+    cust_create_btn: '+ Create Customer',
+    cust_th_client_code: 'Client Code', cust_th_name: 'Name', cust_th_username: 'Username',
+    cust_th_address: 'Address', cust_th_sales_rep: 'Sales Rep', cust_th_status: 'Status',
+    cust_no_customers: 'No customers yet.',
+
+    inv_generate_title: 'Generate Invoice',
+    inv_generate_hint: 'Pick the shipment, choose whether to bill by volume (CBM) or weight (kg), then enter the price — the amount is calculated automatically.',
+    inv_shipment: 'Shipment', inv_bill_by: 'Bill By', inv_unit_price: 'Unit Price',
+    inv_generate_btn: '⚡ Generate Invoice',
+    inv_manual_title: 'Or Issue a Manual Invoice', inv_number: 'Invoice Number',
+    inv_issue_btn: '+ Issue Invoice',
+    inv_th_number: 'Invoice #', inv_th_customer: 'Customer', inv_th_shipment: 'Shipment',
+    inv_th_amount: 'Amount', inv_th_status: 'Status', inv_th_update: 'Update', inv_th_pdf: 'PDF',
+    inv_view_pdf: '📄 View', inv_no_invoices: 'No invoices yet.',
+
+    quote_th_customer: 'Customer', quote_send_btn: 'Send Quote', quote_amount_placeholder: 'Amount',
+    quote_no_quotes: 'No quote requests yet.', quote_quoted_amount_label: 'Quoted amount:',
+
+    svc_add_title: 'Add Service', svc_title_label: 'Title', svc_desc_label: 'Description',
+    svc_desc_hint: 'Shown to customers on the Services page', svc_add_btn: '+ Add Service',
+    svc_th_title: 'Title', svc_th_type: 'Type', svc_th_desc: 'Description', svc_no_services: 'No services yet.',
+
+    offer_create_title: 'Create Offer', offer_title_label: 'Title', offer_desc_label: 'Description',
+    offer_starts: 'Starts (optional)', offer_ends: 'Ends (optional)', offer_create_btn: '+ Create Offer',
+    offer_no_offers: 'No offers yet.', offer_deactivate: 'Deactivate', offer_activate: 'Activate',
+
+    notif_send_title: 'Send to All Customers',
+    notif_hint: 'Goes out immediately to every customer who has the app installed with notifications enabled. Use for weekly updates, price changes, or new offers.',
+    notif_title_label: 'Title', notif_message_label: 'Message',
+    notif_message_hint: 'Keep it short — this shows as a phone notification', notif_send_btn: '🔔 Send Now',
+
+    report_summary_excel: '⬇ Summary (Excel)', report_summary_pdf: '⬇ Summary (PDF)',
+    report_by_employee_title: 'Sales Volume by Employee', report_excel: '⬇ Excel', report_pdf: '⬇ PDF',
+    report_total_invoiced: 'Total invoiced', report_paid: 'Paid', report_outstanding: 'Outstanding',
+    report_customers: 'Customers', report_shipments: 'Shipments',
+    report_th_sales_rep: 'Sales Rep', report_th_invoices: 'Invoices', report_th_total: 'Total Amount',
+    report_no_invoices: 'No invoices yet.',
+
+    emp_create_title: 'Create Staff Account', emp_th_name: 'Name', emp_th_role: 'Role',
+    emp_th_username: 'Username', emp_th_status: 'Status', emp_create_btn: '+ Create Employee',
+    emp_no_employees: 'No employees yet.',
+    perm_customers_manage: 'Manage Customers', perm_shipments_create: 'Create / Receive Shipments',
+    perm_shipments_update_status: 'Update Shipment Status', perm_shipments_edit_measurements: 'Edit Weight / Volume',
+    perm_invoices_manage: 'Manage Invoices', perm_purchases_manage: 'Manage Purchases', perm_expenses_manage: 'Manage Expenses',
+    perm_reports_view: 'View Reports', perm_quotes_manage: 'Respond to Quote Requests', perm_services_manage: 'Manage Services',
+    perm_offers_manage: 'Manage Offers', perm_notifications_send: 'Send Notifications', perm_warehouse_manage: 'Manage Warehouses',
+    emp_permissions_title: 'Permissions', emp_permissions_hint: 'Pre-filled based on the role you picked — check or uncheck anything to customize this specific employee.',
+    emp_edit_permissions: 'Edit Permissions', emp_save_permissions: 'Save Permissions', emp_th_permissions: 'Permissions',
+
+    wh_name: 'Name', wh_phone: 'Phone', wh_address: 'Address', wh_hours: 'Working Hours',
+    wh_instructions: 'Instructions / Notes', wh_instructions_hint: '(shown on the customer\'s shipping-instructions PDF)',
+    wh_add_title: 'Add Warehouse', wh_freight_type: 'Freight Type', wh_city: 'City', wh_country: 'Country (optional)',
+    wh_th_name: 'Name', wh_th_type: 'Type', wh_th_city: 'City', wh_th_status: 'Status',
+    wh_no_data: 'No warehouses added yet.', wh_edit_btn: 'Edit', wh_cancel_edit: 'Cancel',
+    wh_save_new_btn: '+ Add Warehouse', wh_save_edit_btn: 'Save Changes',
+    nav_receiving: '📥 Receiving', page_receiving: 'Receiving',
+    recv_title: 'Receive Goods', recv_hint: 'Log goods the moment they physically arrive — before any shipment exists yet.',
+    recv_financial_note: 'Financial Note (optional)', recv_financial_note_hint: 'Any fees already paid on the customer\'s behalf, so the accountant sees it.',
+    recv_add_btn: '+ Log Received Goods', recv_stock_title: 'Goods in Warehouse (Not Yet Shipped)',
+    recv_th_customer: 'Customer', recv_th_category: 'Category', recv_th_weight_volume: 'Weight / Volume',
+    recv_th_reference: 'Reference #', recv_th_financial_note: 'Financial Note', recv_no_stock: 'No unshipped goods in the warehouse right now.',
+    ship_list_title: 'Create Shipment', ship_assign_title: 'Assign Goods From Warehouse Stock',
+    ship_assign_hint: 'Pick which received goods (from the warehouse stock list) belong in this shipment.',
+    ship_assign_btn: 'Assign Selected to Shipment', ship_no_unassigned: 'No unassigned goods in the warehouse to add.',
+    ship_view_detail: 'View Shipment', ship_back_to_list: '← Back to Shipments List',
+    inv_start_title: 'Start New Invoice', inv_start_btn: '+ Start Invoice',
+    inv_open_title: 'Open Invoice', inv_add_freight_line: 'Add Freight Charge', inv_add_manual_line: 'Add Manual Charge',
+    inv_line_desc: 'Description', inv_line_amount: 'Amount', inv_add_line_btn: '+ Add Line',
+    inv_th_line_desc: 'Description', inv_th_line_amount: 'Amount', inv_remove_line: 'Remove',
+    inv_total_label: 'Total', inv_select_item: 'Select Customer Goods',
+    wh_save_btn: 'Save',
+ 
+    nav_purchases: '💰 Purchases', nav_expenses: '💸 Expenses',
+    page_purchases: 'Purchases & Shipment Costs', page_expenses: 'Expenses',
+
+    purch_add_title: 'Log a Purchase / Shipment Cost', purch_shipment_optional: 'Shipment (optional)',
+    purch_description: 'Description', purch_amount: 'Amount', purch_date: 'Date', purch_add_btn: '+ Add Purchase',
+    purch_th_date: 'Date', purch_th_desc: 'Description', purch_th_shipment: 'Shipment', purch_th_amount: 'Amount',
+    purch_no_data: 'No purchases logged yet.',
+
+    exp_add_title: 'Log an Expense', exp_category: 'Category (optional)', exp_category_placeholder: 'e.g. Rent, Salaries, Utilities',
+    exp_description: 'Description', exp_amount: 'Amount', exp_date: 'Date', exp_add_btn: '+ Add Expense',
+    exp_th_date: 'Date', exp_th_category: 'Category', exp_th_desc: 'Description', exp_th_amount: 'Amount',
+    exp_no_data: 'No expenses logged yet.',
+
+    rep_date_from: 'From', rep_date_to: 'To', rep_apply: 'Apply', rep_export_csv: '⬇ Excel', rep_export_pdf: '⬇ PDF',
+    rep_tab_sales: 'Full Sales', rep_tab_by_employee: 'By Employee', rep_tab_customer_statement: 'Customer Statement',
+    rep_tab_full_statement: 'Full Statement', rep_tab_profit_loss: 'Profit & Loss',
+    rep_select_customer: 'Select Customer', rep_th_date: 'Date', rep_th_invoice: 'Invoice #', rep_th_customer: 'Customer',
+    rep_th_shipment: 'Shipment', rep_th_amount: 'Amount', rep_th_currency: 'Currency', rep_th_status: 'Status',
+    rep_th_client_code: 'Client Code', rep_th_invoices: 'Invoices', rep_revenue: 'Revenue', rep_purchase_cost: 'Purchases / Shipment Costs',
+    rep_expense_cost: 'Expenses', rep_profit: 'Profit / Loss', rep_no_data: 'No data for this period.',
+ 
+    rep_display_currency: 'Display all amounts in', rep_display_none: 'Original currencies (no conversion)',
+    rep_rate_hint: "Enter today's exchange rate for each currency to combine them into one unified total.",
+    rep_unified_total: 'Unified Total', rep_missing_rate: 'Enter all exchange rates above to see a unified total.',
+  },
+  ar: {
+    setup_title: 'إعداد لوحة تحكم الموظفين', setup_label: 'عنوان الباك اند', setup_continue: 'متابعة',
+    login_title: 'تسجيل دخول الموظفين', login_username: 'اسم المستخدم', login_password: 'كلمة المرور', login_submit: 'دخول',
+    login_change_backend: 'تغيير عنوان الباك اند',
+    nav_shipments: '📦 الشحنات', nav_customers: '👥 العملاء', nav_invoices: '🧾 الفواتير',
+    nav_quotes: '💬 طلبات التسعير', nav_services: '🛠️ الخدمات', nav_offers: '🎁 العروض',
+    nav_notifications: '🔔 الإشعارات', nav_reports: '📊 التقارير', nav_employees: '🧑\u200d💼 الموظفين', nav_warehouse: '📍 المستودع',
+    logout: 'تسجيل الخروج', language: 'اللغة',
+    page_shipments: 'الشحنات', page_customers: 'العملاء', page_invoices: 'الفواتير',
+    page_quotes: 'طلبات التسعير', page_services: 'الخدمات', page_offers: 'العروض',
+    page_notifications: 'الإشعارات الفورية', page_reports: 'التقارير', page_employees: 'الموظفين', page_warehouse: 'عنوان المستودع',
+ 
+    common_save: 'حفظ', common_add: 'إضافة', common_create: 'إنشاء', common_send: 'إرسال',
+    common_view: 'عرض', common_download: 'تحميل', common_change_to: 'تغيير إلى…',
+    common_sea: 'بحري', common_air: 'جوي', common_land: 'بري', common_full: 'كلي', common_partial: 'جزئي',
+    common_customer: 'العميل', common_status: 'الحالة', common_actions: 'إجراءات', common_amount: 'المبلغ',
+    common_currency: 'العملة', common_type: 'النوع', common_name: 'الاسم', common_username: 'اسم المستخدم',
+    common_password: 'كلمة المرور', common_phone: 'الهاتف', common_email_optional: 'البريد الإلكتروني (اختياري)',
+    common_role: 'الدور', common_optional: 'اختياري',
+    badge_active: 'فعّال', badge_disabled: 'موقوف', badge_due: 'مستحقة', badge_paid: 'مدفوعة', badge_overdue: 'متأخرة',
+    badge_pending: 'قيد الانتظار', badge_quoted: 'تم التسعير', badge_rejected: 'مرفوض',
+
+    ship_receive_title: 'استلام شحنة جديدة (مستودع الصين)',
+    ship_code: 'كود الشحنة', ship_freight_type: 'نوع الشحن', ship_load_type: 'نوع التحميل',
+    ship_origin: 'المصدر', ship_destination: 'الوجهة',
+    ship_weight_required: 'الوزن (كغم) — إلزامي', ship_volume_required: 'الحجم (متر مكعب) — إلزامي',
+    ship_packages: 'عدد الطرود', ship_reference_label: 'الرقم المرجعي للاستلام',
+    ship_reference_hint: '(رقم تتبع داخلي بالصين، رقم سيارة، أو رقم مصنع)',
+    ship_warehouse: 'المستودع (استلمت فيه)', ship_no_warehouses: 'لا يوجد مستودعات مضافة بعد — ضيف وحدة أول من صفحة المستودع.',
+    ship_items_title: 'الزباين والبضاعة بهاي الشحنة', ship_add_customer_row: '+ إضافة زبون آخر',
+    ship_remove_row: 'حذف', ship_category: 'التصنيف', ship_description: 'الوصف (اختياري)',
+    ship_manage_categories: 'تصنيفات البضاعة', ship_new_category_placeholder: 'اسم تصنيف جديد (مثلاً: قابل للكسر)',
+    ship_add_category: '+ إضافة', ship_th_customers: 'الزباين', ship_view_items: 'عرض / إدارة البضاعة',
+    ship_no_categories: 'لا يوجد تصنيفات بعد — ضيف وحدة تحت.', ship_add_item_title: 'إضافة زبون آخر لهاي الشحنة',
+    ship_add_item_btn: '+ إضافة للشحنة',
+    perm_invoices_override: 'تعديل الفواتير المنفذة (خاصة)',
+    ship_pricing_title: 'تسعير كل زبون', ship_price_btn: 'تسعير', ship_priced_badge: 'تم التسعير',
+    ship_not_priced_badge: 'لسا ما اتسعر', ship_finalize_btn: 'تنفيذ وإصدار الفواتير',
+    ship_finalize_hint: 'بعد ما يتسعر كل الزباين تحت، هاد بيصدر فاتورة كل واحد فعلياً — وبتنقفل من أي تعديل بعدها بدون صلاحية خاصة.',
+    ship_finalized_badge: 'الفواتير منفذة', ship_finalized_note: 'فواتير هاي الشحنة انصدرت. بياناتها المالية هلأ موجودة بالتقارير بس.',
+    ship_close_btn: 'إغلاق الشحنة', ship_closed_badge: 'مغلقة',
+    price_unit_type: 'الفوترة حسب', price_flat: 'مبلغ ثابت', price_extra_desc: 'وصف رسوم إضافية (اختياري)',
+    price_extra_amount: 'مبلغ رسوم إضافية (اختياري)', price_save_btn: 'حفظ السعر', price_modal_title: 'تسعير بضاعة الزبون',
+    inv_locked_note: 'هاي الفاتورة صدرت من شحنة منفذة وما بتقدر تتعدل من هون.',
+    ship_log_receipt_btn: '📥 تسجيل الاستلام وإنشاء الشحنة',
+    ship_view_only_note: 'عندك صلاحية عرض الشحنات فقط. موظف المستودع فقط يسجل الشحنات الجديدة عند استلامها.',
+    ship_th_code: 'الكود', ship_th_customer: 'العميل', ship_th_type: 'النوع',
+    ship_th_weight_volume: 'الوزن / الحجم', ship_th_status: 'الحالة الحالية', ship_th_actions: 'إجراءات',
+    ship_view_only: 'عرض فقط', ship_no_shipments: 'لا يوجد شحنات بعد.',
+    ship_status_placeholder: 'نص الحالة الجديدة...',
+
+    cust_create_title: 'إنشاء حساب عميل جديد',
+    cust_link_note: 'هذا العميل بيترتبط فيك كموظف مبيعات مسؤول عنه بالتقارير.',
+    cust_full_name: 'الاسم الكامل', cust_address: 'العنوان', cust_address_placeholder: 'عنوان العميل',
+    cust_create_btn: '+ إنشاء عميل',
+    cust_th_client_code: 'كود العميل', cust_th_name: 'الاسم', cust_th_username: 'اسم المستخدم',
+    cust_th_address: 'العنوان', cust_th_sales_rep: 'موظف المبيعات', cust_th_status: 'الحالة',
+    cust_no_customers: 'لا يوجد عملاء بعد.',
+
+    inv_generate_title: 'توليد فاتورة',
+    inv_generate_hint: 'اختر الشحنة، حدد إذا رح تفوتر بالحجم (متر مكعب) أو بالوزن (كغم)، ثم أدخل السعر — النظام بيحسب المبلغ تلقائياً.',
+    inv_shipment: 'الشحنة', inv_bill_by: 'الفوترة حسب', inv_unit_price: 'سعر الوحدة',
+    inv_generate_btn: '⚡ توليد الفاتورة',
+    inv_manual_title: 'أو إصدار فاتورة يدوية', inv_number: 'رقم الفاتورة',
+    inv_issue_btn: '+ إصدار فاتورة',
+    inv_th_number: 'رقم الفاتورة', inv_th_customer: 'العميل', inv_th_shipment: 'الشحنة',
+    inv_th_amount: 'المبلغ', inv_th_status: 'الحالة', inv_th_update: 'تحديث', inv_th_pdf: 'PDF',
+    inv_view_pdf: '📄 عرض', inv_no_invoices: 'لا يوجد فواتير بعد.',
+
+    quote_th_customer: 'العميل', quote_send_btn: 'إرسال العرض', quote_amount_placeholder: 'المبلغ',
+    quote_no_quotes: 'لا يوجد طلبات تسعير بعد.', quote_quoted_amount_label: 'المبلغ المعروض:',
+
+    svc_add_title: 'إضافة خدمة', svc_title_label: 'العنوان', svc_desc_label: 'الوصف',
+    svc_desc_hint: 'بيظهر للعملاء بصفحة الخدمات', svc_add_btn: '+ إضافة خدمة',
+    svc_th_title: 'العنوان', svc_th_type: 'النوع', svc_th_desc: 'الوصف', svc_no_services: 'لا يوجد خدمات بعد.',
+
+    offer_create_title: 'إنشاء عرض', offer_title_label: 'العنوان', offer_desc_label: 'الوصف',
+    offer_starts: 'تاريخ البداية (اختياري)', offer_ends: 'تاريخ النهاية (اختياري)', offer_create_btn: '+ إنشاء عرض',
+    offer_no_offers: 'لا يوجد عروض بعد.', offer_deactivate: 'إيقاف', offer_activate: 'تفعيل',
+
+    notif_send_title: 'إرسال لكل العملاء',
+    notif_hint: 'بيوصل فوراً لكل عميل مثبت التطبيق وفعّل الإشعارات. استخدمها للتحديثات الأسبوعية، تغيير الأسعار، أو العروض الجديدة.',
+    notif_title_label: 'العنوان', notif_message_label: 'الرسالة',
+    notif_message_hint: 'خليها قصيرة — رح تظهر كإشعار على الموبايل', notif_send_btn: '🔔 إرسال الآن',
+
+    report_summary_excel: '⬇ الملخص (Excel)', report_summary_pdf: '⬇ الملخص (PDF)',
+    report_by_employee_title: 'حجم المبيعات حسب الموظف', report_excel: '⬇ Excel', report_pdf: '⬇ PDF',
+    report_total_invoiced: 'إجمالي الفواتير', report_paid: 'المدفوع', report_outstanding: 'المستحق',
+    report_customers: 'العملاء', report_shipments: 'الشحنات',
+    report_th_sales_rep: 'موظف المبيعات', report_th_invoices: 'عدد الفواتير', report_th_total: 'إجمالي المبلغ',
+    report_no_invoices: 'لا يوجد فواتير بعد.',
+
+    emp_create_title: 'إنشاء حساب موظف', emp_th_name: 'الاسم', emp_th_role: 'الدور',
+    emp_th_username: 'اسم المستخدم', emp_th_status: 'الحالة', emp_create_btn: '+ إنشاء موظف',
+    emp_no_employees: 'لا يوجد موظفين بعد.',
+    perm_customers_manage: 'إدارة العملاء', perm_shipments_create: 'إنشاء / استلام الشحنات',
+    perm_shipments_update_status: 'تحديث حالة الشحنة', perm_shipments_edit_measurements: 'تعديل الوزن / الحجم',
+    perm_invoices_manage: 'إدارة الفواتير', perm_purchases_manage: 'إدارة المشتريات', perm_expenses_manage: 'إدارة المصاريف',
+    perm_reports_view: 'عرض التقارير', perm_quotes_manage: 'الرد على طلبات التسعير', perm_services_manage: 'إدارة الخدمات',
+    perm_offers_manage: 'إدارة العروض', perm_notifications_send: 'إرسال الإشعارات', perm_warehouse_manage: 'إدارة المستودعات',
+    emp_permissions_title: 'الصلاحيات', emp_permissions_hint: 'معبأة تلقائياً حسب الدور يلي اخترته — قدر تأشر أو تلغي أي صلاحية حسب هاد الموظف بالتحديد.',
+    emp_edit_permissions: 'تعديل الصلاحيات', emp_save_permissions: 'حفظ الصلاحيات', emp_th_permissions: 'الصلاحيات',
+
+    wh_name: 'الاسم', wh_phone: 'الهاتف', wh_address: 'العنوان', wh_hours: 'ساعات العمل',
+    wh_instructions: 'التعليمات / ملاحظات', wh_instructions_hint: '(بتظهر بملف تعليمات الشحن الخاص بالعميل)',
+    wh_add_title: 'إضافة مستودع', wh_freight_type: 'نوع الشحن', wh_city: 'المدينة', wh_country: 'الدولة (اختياري)',
+    wh_th_name: 'الاسم', wh_th_type: 'النوع', wh_th_city: 'المدينة', wh_th_status: 'الحالة',
+    wh_no_data: 'لا يوجد مستودعات مضافة بعد.', wh_edit_btn: 'تعديل', wh_cancel_edit: 'إلغاء',
+    wh_save_new_btn: '+ إضافة مستودع', wh_save_edit_btn: 'حفظ التعديلات',
+    nav_receiving: '📥 الاستلام', page_receiving: 'الاستلام',
+    recv_title: 'استلام بضاعة', recv_hint: 'سجل البضاعة لحظة وصولها فعلياً — قبل ما تكون أي شحنة موجودة.',
+    recv_financial_note: 'ملاحظة مالية (اختياري)', recv_financial_note_hint: 'أي مصاريف تم دفعها نيابة عن الزبون، حتى يشوفها المحاسب.',
+    recv_add_btn: '+ تسجيل استلام', recv_stock_title: 'البضاعة بالمستودع (لسا ما شُحنت)',
+    recv_th_customer: 'الزبون', recv_th_category: 'التصنيف', recv_th_weight_volume: 'الوزن / الحجم',
+    recv_th_reference: 'الرقم المرجعي', recv_th_financial_note: 'الملاحظة المالية', recv_no_stock: 'لا يوجد بضاعة غير مشحونة بالمستودع حالياً.',
+    ship_list_title: 'إنشاء شحنة', ship_assign_title: 'تعيين بضاعة من مخزون المستودع',
+    ship_assign_hint: 'اختر البضاعة المستلمة (من قائمة مخزون المستودع) يلي بدك تضيفها لهاي الشحنة.',
+    ship_assign_btn: 'تعيين المحدد للشحنة', ship_no_unassigned: 'لا يوجد بضاعة غير معينة بالمستودع لإضافتها.',
+    ship_view_detail: 'عرض الشحنة', ship_back_to_list: '← رجوع لقائمة الشحنات',
+    inv_start_title: 'بدء فاتورة جديدة', inv_start_btn: '+ بدء فاتورة',
+    inv_open_title: 'الفاتورة المفتوحة', inv_add_freight_line: 'إضافة رسوم شحن', inv_add_manual_line: 'إضافة رسوم يدوية',
+    inv_line_desc: 'الوصف', inv_line_amount: 'المبلغ', inv_add_line_btn: '+ إضافة بند',
+    inv_th_line_desc: 'الوصف', inv_th_line_amount: 'المبلغ', inv_remove_line: 'حذف',
+    inv_total_label: 'الإجمالي', inv_select_item: 'اختر بضاعة الزبون',
+    wh_save_btn: 'حفظ',
+ 
+    nav_purchases: '💰 المشتريات', nav_expenses: '💸 المصاريف',
+    page_purchases: 'المشتريات وتكاليف الشحنات', page_expenses: 'المصاريف',
+
+    purch_add_title: 'تسجيل مشترى / تكلفة شحنة', purch_shipment_optional: 'الشحنة (اختياري)',
+    purch_description: 'الوصف', purch_amount: 'المبلغ', purch_date: 'التاريخ', purch_add_btn: '+ إضافة مشترى',
+    purch_th_date: 'التاريخ', purch_th_desc: 'الوصف', purch_th_shipment: 'الشحنة', purch_th_amount: 'المبلغ',
+    purch_no_data: 'لا يوجد مشتريات مسجلة بعد.',
+
+    exp_add_title: 'تسجيل مصروف', exp_category: 'التصنيف (اختياري)', exp_category_placeholder: 'مثلاً: إيجار، رواتب، فواتير',
+    exp_description: 'الوصف', exp_amount: 'المبلغ', exp_date: 'التاريخ', exp_add_btn: '+ إضافة مصروف',
+    exp_th_date: 'التاريخ', exp_th_category: 'التصنيف', exp_th_desc: 'الوصف', exp_th_amount: 'المبلغ',
+    exp_no_data: 'لا يوجد مصاريف مسجلة بعد.',
+
+    rep_date_from: 'من تاريخ', rep_date_to: 'إلى تاريخ', rep_apply: 'تطبيق', rep_export_csv: '⬇ Excel', rep_export_pdf: '⬇ PDF',
+    rep_tab_sales: 'المبيعات الكاملة', rep_tab_by_employee: 'حسب الموظف', rep_tab_customer_statement: 'كشف حساب عميل',
+    rep_tab_full_statement: 'كشف حساب كامل', rep_tab_profit_loss: 'الأرباح والخسائر',
+    rep_select_customer: 'اختر العميل', rep_th_date: 'التاريخ', rep_th_invoice: 'رقم الفاتورة', rep_th_customer: 'العميل',
+    rep_th_shipment: 'الشحنة', rep_th_amount: 'المبلغ', rep_th_currency: 'العملة', rep_th_status: 'الحالة',
+    rep_th_client_code: 'كود العميل', rep_th_invoices: 'عدد الفواتير', rep_revenue: 'الإيرادات', rep_purchase_cost: 'المشتريات / تكاليف الشحن',
+    rep_expense_cost: 'المصاريف', rep_profit: 'الربح / الخسارة', rep_no_data: 'لا يوجد بيانات لهذه الفترة.',
+ 
+    rep_display_currency: 'اعرض كل المبالغ بعملة', rep_display_none: 'كل عملة لحالها (بدون تحويل)',
+    rep_rate_hint: 'أدخل سعر الصرف الحالي لكل عملة حتى يتم دمجهم بمجموع موحد.',
+    rep_unified_total: 'المجموع الموحد', rep_missing_rate: 'أدخل كل أسعار الصرف فوق حتى يظهر المجموع الموحد.',
+  },
+  zh: {
+    setup_title: '员工后台设置', setup_label: '后端服务器地址', setup_continue: '继续',
+    login_title: '员工登录', login_username: '用户名', login_password: '密码', login_submit: '登录',
+    login_change_backend: '更改后端地址',
+    nav_shipments: '📦 货运', nav_customers: '👥 客户', nav_invoices: '🧾 发票',
+    nav_quotes: '💬 报价请求', nav_services: '🛠️ 服务', nav_offers: '🎁 优惠',
+    nav_notifications: '🔔 通知', nav_reports: '📊 报表', nav_employees: '🧑\u200d💼 员工', nav_warehouse: '📍 仓库',
+    logout: '退出登录', language: '语言',
+    page_shipments: '货运', page_customers: '客户', page_invoices: '发票',
+    page_quotes: '报价请求', page_services: '服务', page_offers: '优惠',
+    page_notifications: '推送通知', page_reports: '报表', page_employees: '员工', page_warehouse: '仓库地址',
+ 
+    common_save: '保存', common_add: '添加', common_create: '创建', common_send: '发送',
+    common_view: '查看', common_download: '下载', common_change_to: '更改为…',
+    common_sea: '海运', common_air: '空运', common_land: '陆运', common_full: '整柜', common_partial: '拼柜',
+    common_customer: '客户', common_status: '状态', common_actions: '操作', common_amount: '金额',
+    common_currency: '货币', common_type: '类型', common_name: '姓名', common_username: '用户名',
+    common_password: '密码', common_phone: '电话', common_email_optional: '邮箱（可选）',
+    common_role: '角色', common_optional: '可选',
+    badge_active: '启用', badge_disabled: '停用', badge_due: '待付', badge_paid: '已付', badge_overdue: '逾期',
+    badge_pending: '待处理', badge_quoted: '已报价', badge_rejected: '已拒绝',
+
+    ship_receive_title: '接收新货物（中国仓库）',
+    ship_code: '货运编号', ship_freight_type: '运输方式', ship_load_type: '装载类型',
+    ship_origin: '起点', ship_destination: '目的地',
+    ship_weight_required: '重量（公斤）— 必填', ship_volume_required: '体积（立方米）— 必填',
+    ship_packages: '件数', ship_reference_label: '接收参考号',
+    ship_reference_hint: '（中国内部跟踪号、车牌号或工厂编号）',
+    ship_warehouse: '仓库（接收地点）', ship_no_warehouses: '尚未设置仓库 — 请先在仓库页面添加一个。',
+    ship_items_title: '此货运中的客户与货物', ship_add_customer_row: '+ 添加另一位客户',
+    ship_remove_row: '移除', ship_category: '类别', ship_description: '描述（可选）',
+    ship_manage_categories: '货物类别', ship_new_category_placeholder: '新类别名称（如：易碎品）',
+    ship_add_category: '+ 添加', ship_th_customers: '客户', ship_view_items: '查看/管理货物',
+    ship_no_categories: '暂无类别 — 请在下方添加。', ship_add_item_title: '为此货运添加另一位客户',
+    ship_add_item_btn: '+ 添加到货运',
+    perm_invoices_override: '编辑已完成发票（特殊）',
+    ship_pricing_title: '为每位客户定价', ship_price_btn: '定价', ship_priced_badge: '已定价',
+    ship_not_priced_badge: '未定价', ship_finalize_btn: '完成并开具发票',
+    ship_finalize_hint: '当下方所有客户都已定价后，将为每位客户开具正式发票 — 之后如无特殊权限将无法再修改。',
+    ship_finalized_badge: '发票已完成', ship_finalized_note: '此货运的发票已开具。其财务数据现仅存在于报表中。',
+    ship_close_btn: '关闭货运', ship_closed_badge: '已关闭',
+    price_unit_type: '计费方式', price_flat: '固定金额', price_extra_desc: '额外费用说明（可选）',
+    price_extra_amount: '额外费用金额（可选）', price_save_btn: '保存价格', price_modal_title: '客户货物定价',
+    inv_locked_note: '此发票来自已完成的货运，无法在此处编辑。',
+    ship_log_receipt_btn: '📥 登记接收并创建货运',
+    ship_view_only_note: '您只有查看权限。只有仓库员工可以登记新接收的货物。',
+    ship_th_code: '编号', ship_th_customer: '客户', ship_th_type: '类型',
+    ship_th_weight_volume: '重量/体积', ship_th_status: '当前状态', ship_th_actions: '操作',
+    ship_view_only: '仅查看', ship_no_shipments: '暂无货运记录。',
+    ship_status_placeholder: '新状态文字...',
+
+    cust_create_title: '创建新客户账号',
+    cust_link_note: '此客户将与您关联为其销售代表，用于报表统计。',
+    cust_full_name: '姓名', cust_address: '地址', cust_address_placeholder: '客户地址',
+    cust_create_btn: '+ 创建客户',
+    cust_th_client_code: '客户编号', cust_th_name: '姓名', cust_th_username: '用户名',
+    cust_th_address: '地址', cust_th_sales_rep: '销售代表', cust_th_status: '状态',
+    cust_no_customers: '暂无客户。',
+
+    inv_generate_title: '生成发票',
+    inv_generate_hint: '选择货运，选择按体积（CBM）或重量（公斤）计费，然后输入价格 — 金额将自动计算。',
+    inv_shipment: '货运', inv_bill_by: '计费方式', inv_unit_price: '单价',
+    inv_generate_btn: '⚡ 生成发票',
+    inv_manual_title: '或手动开具发票', inv_number: '发票号',
+    inv_issue_btn: '+ 开具发票',
+    inv_th_number: '发票号', inv_th_customer: '客户', inv_th_shipment: '货运',
+    inv_th_amount: '金额', inv_th_status: '状态', inv_th_update: '更新', inv_th_pdf: 'PDF',
+    inv_view_pdf: '📄 查看', inv_no_invoices: '暂无发票。',
+
+    quote_th_customer: '客户', quote_send_btn: '发送报价', quote_amount_placeholder: '金额',
+    quote_no_quotes: '暂无报价请求。', quote_quoted_amount_label: '报价金额：',
+
+    svc_add_title: '添加服务', svc_title_label: '标题', svc_desc_label: '描述',
+    svc_desc_hint: '将显示在客户服务页面', svc_add_btn: '+ 添加服务',
+    svc_th_title: '标题', svc_th_type: '类型', svc_th_desc: '描述', svc_no_services: '暂无服务。',
+
+    offer_create_title: '创建优惠', offer_title_label: '标题', offer_desc_label: '描述',
+    offer_starts: '开始日期（可选）', offer_ends: '结束日期（可选）', offer_create_btn: '+ 创建优惠',
+    offer_no_offers: '暂无优惠。', offer_deactivate: '停用', offer_activate: '启用',
+
+    notif_send_title: '发送给所有客户',
+    notif_hint: '将立即发送给所有安装了应用并启用通知的客户。用于每周更新、价格变化或新优惠。',
+    notif_title_label: '标题', notif_message_label: '消息',
+    notif_message_hint: '请保持简短 — 将以手机通知形式显示', notif_send_btn: '🔔 立即发送',
+
+    report_summary_excel: '⬇ 摘要（Excel）', report_summary_pdf: '⬇ 摘要（PDF）',
+    report_by_employee_title: '按员工统计销售额', report_excel: '⬇ Excel', report_pdf: '⬇ PDF',
+    report_total_invoiced: '发票总额', report_paid: '已付', report_outstanding: '未付',
+    report_customers: '客户数', report_shipments: '货运数',
+    report_th_sales_rep: '销售代表', report_th_invoices: '发票数', report_th_total: '总金额',
+    report_no_invoices: '暂无发票。',
+
+    emp_create_title: '创建员工账号', emp_th_name: '姓名', emp_th_role: '角色',
+    emp_th_username: '用户名', emp_th_status: '状态', emp_create_btn: '+ 创建员工',
+    emp_no_employees: '暂无员工。',
+    perm_customers_manage: '管理客户', perm_shipments_create: '创建/接收货运',
+    perm_shipments_update_status: '更新货运状态', perm_shipments_edit_measurements: '编辑重量/体积',
+    perm_invoices_manage: '管理发票', perm_purchases_manage: '管理采购', perm_expenses_manage: '管理支出',
+    perm_reports_view: '查看报表', perm_quotes_manage: '回复报价请求', perm_services_manage: '管理服务',
+    perm_offers_manage: '管理优惠', perm_notifications_send: '发送通知', perm_warehouse_manage: '管理仓库',
+    emp_permissions_title: '权限', emp_permissions_hint: '已根据所选角色预填 — 可勾选或取消以自定义此员工的权限。',
+    emp_edit_permissions: '编辑权限', emp_save_permissions: '保存权限', emp_th_permissions: '权限',
+
+    wh_name: '名称', wh_phone: '电话', wh_address: '地址', wh_hours: '工作时间',
+    wh_instructions: '说明/备注', wh_instructions_hint: '（将显示在客户的发货说明PDF中）',
+    wh_add_title: '添加仓库', wh_freight_type: '运输方式', wh_city: '城市', wh_country: '国家（可选）',
+    wh_th_name: '名称', wh_th_type: '类型', wh_th_city: '城市', wh_th_status: '状态',
+    wh_no_data: '暂无仓库。', wh_edit_btn: '编辑', wh_cancel_edit: '取消',
+    wh_save_new_btn: '+ 添加仓库', wh_save_edit_btn: '保存更改',
+    nav_receiving: '📥 接收', page_receiving: '接收',
+    recv_title: '接收货物', recv_hint: '货物实际到达时立即登记 — 此时尚未创建任何货运。',
+    recv_financial_note: '财务备注（可选）', recv_financial_note_hint: '任何已代客户支付的费用，以便会计查看。',
+    recv_add_btn: '+ 登记接收货物', recv_stock_title: '仓库中的货物（尚未发运）',
+    recv_th_customer: '客户', recv_th_category: '类别', recv_th_weight_volume: '重量/体积',
+    recv_th_reference: '参考号', recv_th_financial_note: '财务备注', recv_no_stock: '目前仓库中没有未发运的货物。',
+    ship_list_title: '创建货运', ship_assign_title: '从仓库库存分配货物',
+    ship_assign_hint: '选择要加入此货运的已接收货物（来自仓库库存列表）。',
+    ship_assign_btn: '将所选分配到货运', ship_no_unassigned: '仓库中没有可添加的未分配货物。',
+    ship_view_detail: '查看货运', ship_back_to_list: '← 返回货运列表',
+    inv_start_title: '开始新发票', inv_start_btn: '+ 开始发票',
+    inv_open_title: '当前发票', inv_add_freight_line: '添加运费', inv_add_manual_line: '添加手动费用',
+    inv_line_desc: '描述', inv_line_amount: '金额', inv_add_line_btn: '+ 添加项目',
+    inv_th_line_desc: '描述', inv_th_line_amount: '金额', inv_remove_line: '移除',
+    inv_total_label: '总计', inv_select_item: '选择客户货物',
+    wh_save_btn: '保存',
+ 
+    nav_purchases: '💰 采购', nav_expenses: '💸 支出',
+    page_purchases: '采购与货运成本', page_expenses: '支出',
+
+    purch_add_title: '登记采购/货运成本', purch_shipment_optional: '货运（可选）',
+    purch_description: '描述', purch_amount: '金额', purch_date: '日期', purch_add_btn: '+ 添加采购',
+    purch_th_date: '日期', purch_th_desc: '描述', purch_th_shipment: '货运', purch_th_amount: '金额',
+    purch_no_data: '暂无采购记录。',
+
+    exp_add_title: '登记支出', exp_category: '类别（可选）', exp_category_placeholder: '例如：租金、工资、水电费',
+    exp_description: '描述', exp_amount: '金额', exp_date: '日期', exp_add_btn: '+ 添加支出',
+    exp_th_date: '日期', exp_th_category: '类别', exp_th_desc: '描述', exp_th_amount: '金额',
+    exp_no_data: '暂无支出记录。',
+
+    rep_date_from: '从', rep_date_to: '到', rep_apply: '应用', rep_export_csv: '⬇ Excel', rep_export_pdf: '⬇ PDF',
+    rep_tab_sales: '完整销售', rep_tab_by_employee: '按员工', rep_tab_customer_statement: '客户对账单',
+    rep_tab_full_statement: '完整对账单', rep_tab_profit_loss: '损益',
+    rep_select_customer: '选择客户', rep_th_date: '日期', rep_th_invoice: '发票号', rep_th_customer: '客户',
+    rep_th_shipment: '货运', rep_th_amount: '金额', rep_th_currency: '货币', rep_th_status: '状态',
+    rep_th_client_code: '客户编号', rep_th_invoices: '发票数', rep_revenue: '收入', rep_purchase_cost: '采购/货运成本',
+    rep_expense_cost: '支出', rep_profit: '损益', rep_no_data: '此期间暂无数据。',
+ 
+    rep_display_currency: '统一显示货币为', rep_display_none: '按原始货币（不转换）',
+    rep_rate_hint: '请输入今日各货币汇率，以合并为统一总额。',
+    rep_unified_total: '统一总额', rep_missing_rate: '请输入以上所有汇率以查看统一总额。',
+  },
+};
+const DASH_LANGUAGES = [ { code: 'ar', label: 'العربية' }, { code: 'en', label: 'English' }, { code: 'zh', label: '中文' } ];
+let dashLang = localStorage.getItem('sigmaDashLang') || 'en';
+
+function dt(key){ return (DASH_TRANSLATIONS[dashLang] && DASH_TRANSLATIONS[dashLang][key]) || DASH_TRANSLATIONS.en[key] || key; }
+
+function applyDashDirection(){
+  document.documentElement.dir = dashLang === 'ar' ? 'rtl' : 'ltr';
+  document.documentElement.lang = dashLang;
+}
+
+function langPickerHtml(){
+  return DASH_LANGUAGES.map(l =>
+    `<button type="button" class="langChip ${l.code === dashLang ? 'active' : ''}" onclick="setDashLang('${l.code}')">${l.label}</button>`
+  ).join('');
+}
+
+function renderAllLangPickers(){
+  document.querySelectorAll('.langRow').forEach(el => { el.innerHTML = langPickerHtml(); });
+}
+
+function renderLoginTexts(){
+  const sub = document.getElementById('loginSubtitle'); if (sub) sub.textContent = dt('login_title');
+  const uLabel = document.getElementById('loginUsernameLabel'); if (uLabel) uLabel.textContent = dt('login_username');
+  const pLabel = document.getElementById('loginPasswordLabel'); if (pLabel) pLabel.textContent = dt('login_password');
+  const submitBtn = document.getElementById('loginSubmitBtn'); if (submitBtn) submitBtn.textContent = dt('login_submit');
+  const changeBackend = document.getElementById('changeBackendLink'); if (changeBackend) changeBackend.textContent = dt('login_change_backend');
+  const setupSub = document.getElementById('setupSubtitle'); if (setupSub) setupSub.textContent = dt('setup_title');
+  const setupLbl = document.getElementById('setupLabel'); if (setupLbl) setupLbl.textContent = dt('setup_label');
+  const setupBtn = document.getElementById('setupContinueBtn'); if (setupBtn) setupBtn.textContent = dt('setup_continue');
+}
+
+function setDashLang(code){
+  dashLang = code;
+  localStorage.setItem('sigmaDashLang', code);
+  applyDashDirection();
+  renderAllLangPickers();
+  renderLoginTexts();
+  if (currentUser && document.getElementById('dashboard').style.display !== 'none') {
+    const logoutBtn = document.getElementById('sidebarLogoutBtn'); if (logoutBtn) logoutBtn.textContent = dt('logout');
+    renderNav();
+    goPage(currentPage);
+  }
+}
+
+function toast(msg, isError){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (isError ? ' error' : '');
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 3500);
+}
+
+async function api(path, options = {}) {
+  const opts = Object.assign({}, options);
+  opts.headers = Object.assign({ 'Content-Type': 'application/json' }, options.headers || {});
+  if (accessToken) opts.headers.Authorization = 'Bearer ' + accessToken;
+
+  let res = await fetch(API_URL + path, opts);
+  if (res.status === 401 && refreshToken) {
+    const r = await fetch(API_URL + '/auth/refresh', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ refreshToken }) });
+    if (r.ok) {
+      const data = await r.json();
+      accessToken = data.accessToken; refreshToken = data.refreshToken;
+      localStorage.setItem('sigmaAccessToken', accessToken);
+      localStorage.setItem('sigmaRefreshToken', refreshToken);
+      opts.headers.Authorization = 'Bearer ' + accessToken;
+      res = await fetch(API_URL + path, opts);
+    } else { doLogout(); throw new Error('Session expired, please log in again.'); }
+  }
+  if (!res.ok) {
+    let msg = 'Request failed';
+    try { const j = await res.json(); msg = j.error || msg; } catch (e) {}
+    throw new Error(msg);
+  }
+  if (res.status === 204) return null;
+  return res.json();
+}
+
+function showSetup(){
+  document.getElementById('setupScreen').style.display = 'flex';
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('apiUrlInput').value = API_URL;
+}
+function showLogin(){
+  document.getElementById('setupScreen').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('dashboard').style.display = 'none';
+}
+function showDashboard(){
+  document.getElementById('setupScreen').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+  document.getElementById('roleTag').textContent = currentUser.fullName + ' · ' + currentUser.role.replace('_',' ');
+  const logoutBtn = document.getElementById('sidebarLogoutBtn'); if (logoutBtn) logoutBtn.textContent = dt('logout');
+  renderAllLangPickers();
+  renderNav();
+  const firstPage = NAV_ITEMS.find(n => n.roles.includes(currentUser.role));
+  goPage(firstPage ? firstPage.key : 'shipments');
+}
+
+function renderNav(){
+  const list = document.getElementById('navList');
+  list.innerHTML = NAV_ITEMS.filter(n => n.roles.includes(currentUser.role)).map(n =>
+    `<button class="navitem" data-page="${n.key}" onclick="goPage('${n.key}')">${dt('nav_' + n.key)}</button>`
+  ).join('');
+}
+
+function saveApiUrl(){
+  const val = document.getElementById('apiUrlInput').value.trim().replace(/\/$/, '');
+  const err = document.getElementById('setupError');
+  if (!val.startsWith('http')) { err.textContent = 'Please enter a full address starting with http:// or https://'; err.style.display = 'block'; return; }
+  API_URL = val;
+  localStorage.setItem('sigmaApiUrl', API_URL);
+  err.style.display = 'none';
+  showLogin();
+}
+
+async function doLogin(){
+  const username = document.getElementById('loginUsername').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const err = document.getElementById('loginError');
+  err.style.display = 'none';
+  if (!username || !password) { err.textContent = 'Please enter both username and password.'; err.style.display = 'block'; return; }
+  try {
+    const res = await fetch(API_URL + '/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password }) });
+    if (!res.ok) throw new Error('Invalid username or password.');
+    const data = await res.json();
+    if (data.user.role === 'customer') throw new Error('This is a customer account — use the mobile app instead.');
+    accessToken = data.accessToken; refreshToken = data.refreshToken; currentUser = data.user;
+    localStorage.setItem('sigmaAccessToken', accessToken);
+    localStorage.setItem('sigmaRefreshToken', refreshToken);
+    localStorage.setItem('sigmaUser', JSON.stringify(currentUser));
+    showDashboard();
+  } catch (e) {
+    err.textContent = e.message.includes('fetch') ? 'Could not reach the backend. Check the address and that the server is running.' : e.message;
+    err.style.display = 'block';
+  }
+}
+
+function doLogout(){
+  accessToken = ''; refreshToken = ''; currentUser = null;
+  localStorage.removeItem('sigmaAccessToken'); localStorage.removeItem('sigmaRefreshToken'); localStorage.removeItem('sigmaUser');
+  showLogin();
+}
+
+function goPage(page){
+  if (!canSee(page)) { toast('You do not have access to this section.', true); return; }
+  currentPage = page;
+  document.querySelectorAll('.navitem').forEach(n => n.classList.toggle('active', n.dataset.page === page));
+  const renderers = {
+    receiving: renderReceiving, shipments: renderShipments, customers: renderCustomers, invoices: renderInvoices,
+    quotes: renderQuotes, services: renderServices, warehouse: renderWarehouse,
+    offers: renderOffers, notifications: renderNotifications, reports: renderReports, employees: renderEmployees,
+    purchases: renderPurchases, expenses: renderExpenses,
+  };
+  renderers[page]();
+}
+
+/* ---------- Receiving (goods arriving at the warehouse, before any shipment) ---------- */
+let cachedCategoriesRecv = [];
+let cachedCustomersRecv = [];
+
+async function renderReceiving(){
+  const main = document.getElementById('mainContent');
+  main.innerHTML = `<div class="pageHead"><h1>${dt('page_receiving')}</h1></div>
+    <div class="card">
+      <div class="cardTitle">${dt('recv_title')}</div>
+      <div class="helpText" style="margin-bottom:10px">${dt('recv_hint')}</div>
+      <div class="formGrid">
+        <div><label>${dt('common_customer')}</label><select id="recvCustomer"></select></div>
+        <div><label>${dt('ship_category')}</label><select id="recvCategory"><option value="">—</option></select></div>
+        <div><label>${dt('ship_weight_required')}</label><input id="recvWeight" type="number" /></div>
+        <div><label>${dt('ship_volume_required')}</label><input id="recvVolume" type="number" step="0.01" /></div>
+        <div><label>${dt('ship_packages')}</label><input id="recvPackages" type="number" /></div>
+        <div><label>${dt('ship_reference_label')}</label><input id="recvReference" placeholder="e.g. CN-INT-77213" /></div>
+        <div class="full"><label>${dt('ship_description')}</label><input id="recvDescription" /></div>
+        <div class="full"><label>${dt('recv_financial_note')} <span class="smallMuted">${dt('recv_financial_note_hint')}</span></label><input id="recvFinancialNote" /></div>
+      </div>
+      <div class="rowActions"><button class="btn btn-primary" style="width:auto" onclick="submitReceiving()">${dt('recv_add_btn')}</button></div>
+    </div>
+    <div class="cardTitle">${dt('recv_stock_title')}</div>
+    <div id="recvStockWrap"><div class="emptyState">Loading…</div></div>`;
+
+  try {
+    const [customers, categories] = await Promise.all([api('/admin/customers'), api('/categories')]);
+    cachedCustomersRecv = customers; cachedCategoriesRecv = categories;
+    document.getElementById('recvCustomer').innerHTML = customers.map(c => `<option value="${c.id}">${c.fullName} (${c.clientCode})</option>`).join('');
+    document.getElementById('recvCategory').innerHTML += categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    await refreshReceivingStock();
+  } catch (e) { toast(e.message, true); }
+}
+
+async function refreshReceivingStock(){
+  const items = await api('/admin/receiving');
+  const wrap = document.getElementById('recvStockWrap');
+  if (!items.length) { wrap.innerHTML = `<div class="emptyState">${dt('recv_no_stock')}</div>`; return; }
+  wrap.innerHTML = `<table><tr><th>${dt('recv_th_customer')}</th><th>${dt('recv_th_category')}</th><th>${dt('recv_th_weight_volume')}</th><th>${dt('recv_th_reference')}</th><th>${dt('recv_th_financial_note')}</th></tr>
+    ${items.map(it => `<tr>
+      <td>${it.customer ? it.customer.fullName + ' (' + it.customer.clientCode + ')' : '—'}</td>
+      <td>${it.category ? it.category.name : '—'}</td>
+      <td>${it.weightKg} kg · ${it.volumeCbm} CBM</td>
+      <td class="smallMuted">${it.referenceNumber || '—'}</td>
+      <td class="smallMuted">${it.financialNote || '—'}</td>
+    </tr>`).join('')}</table>`;
+}
+
+async function submitReceiving(){
+  const body = {
+    customerId: document.getElementById('recvCustomer').value,
+    categoryId: document.getElementById('recvCategory').value || null,
+    weightKg: Number(document.getElementById('recvWeight').value || 0),
+    volumeCbm: Number(document.getElementById('recvVolume').value || 0),
+    packagesCount: document.getElementById('recvPackages').value ? Number(document.getElementById('recvPackages').value) : null,
+    referenceNumber: document.getElementById('recvReference').value.trim() || null,
+    description: document.getElementById('recvDescription').value.trim() || null,
+    financialNote: document.getElementById('recvFinancialNote').value.trim() || null,
+  };
+  if (!body.customerId || !body.weightKg || !body.volumeCbm) { toast('Pick a customer and enter weight/volume.', true); return; }
+  try {
+    await api('/admin/receiving', { method: 'POST', body: JSON.stringify(body) });
+    toast('Goods received and logged.');
+    document.getElementById('recvWeight').value = '';
+    document.getElementById('recvVolume').value = '';
+    document.getElementById('recvPackages').value = '';
+    document.getElementById('recvReference').value = '';
+    document.getElementById('recvDescription').value = '';
+    document.getElementById('recvFinancialNote').value = '';
+    refreshReceivingStock();
+  } catch (e) { toast(e.message, true); }
+}
+
+/* ---------- Shipments ---------- */
+let shipItemRowCount = 0;
+let cachedCategories = [];
+let cachedCustomers = [];
+
+async function addCategoryQuick(){
+  const input = document.getElementById('newCategoryName');
+  const name = input.value.trim();
+  if (!name) { toast('Enter a category name first.', true); return; }
+  try {
+    await api('/admin/categories', { method: 'POST', body: JSON.stringify({ name }) });
+    input.value = '';
+    toast('Category added.');
+    cachedCategories = await api('/categories');
+    renderCategoryChips();
+  } catch (e) { toast(e.message, true); }
+}
+
+function renderCategoryChips(){
+  const wrap = document.getElementById('categoryChipsWrap');
+  if (!wrap) return;
+  wrap.innerHTML = cachedCategories.length
+    ? cachedCategories.map(c => `<span class="badge neutral" style="margin:2px">${c.name}</span>`).join('')
+    : `<span class="smallMuted">${dt('ship_no_categories')}</span>`;
+}
+
+async function renderShipments(){
+  const main = document.getElementById('mainContent');
+  const canReceive = hasPerm('shipments.create');
+  const canManageCategories = hasPerm('shipments.manage_categories');
+
+  main.innerHTML = `<div class="pageHead"><h1>${dt('page_shipments')}</h1></div>
+    ${canManageCategories ? `<div class="card">
+      <div class="cardTitle">${dt('ship_manage_categories')}</div>
+      <div id="categoryChipsWrap" style="margin-bottom:10px;"></div>
+      <div class="rowActions">
+        <input id="newCategoryName" placeholder="${dt('ship_new_category_placeholder')}" style="max-width:260px" />
+        <button class="btn btn-outline" onclick="addCategoryQuick()">${dt('ship_add_category')}</button>
+      </div>
+    </div>` : ''}
+    ${canReceive ? `<div class="card">
+      <div class="cardTitle">${dt('ship_list_title')}</div>
+      <div class="formGrid">
+        <div><label>${dt('ship_code')}</label><input id="newShipCode" placeholder="e.g. SGX-88300" /></div>
+        <div class="full"><label>${dt('ship_warehouse')}</label><select id="newShipWarehouse"></select></div>
+        <div><label>${dt('ship_load_type')}</label><select id="newShipLoad"><option value="">—</option><option value="full">${dt('common_full')}</option><option value="partial">${dt('common_partial')}</option></select></div>
+        <div><label>${dt('ship_destination')}</label><input id="newShipDest" placeholder="e.g. Dubai, UAE" value="Dubai, UAE" /></div>
+      </div>
+      <div class="rowActions"><button class="btn btn-primary" style="width:auto" onclick="createShipment()">${dt('ship_log_receipt_btn')}</button></div>
+    </div>` : ''}
+    <div id="shipmentsWrap"><div class="emptyState">Loading…</div></div>`;
+
+  try {
+    const promises = [api('/admin/shipments')];
+    if (canReceive) promises.push(api('/warehouses'));
+    if (canManageCategories) promises.push(api('/categories'));
+    const results = await Promise.all(promises);
+    const shipments = results[0];
+
+    if (canReceive) {
+      const warehouses = results[1];
+      const activeWarehouses = warehouses.filter(w => w.isActive);
+      document.getElementById('newShipWarehouse').innerHTML = activeWarehouses.length
+        ? activeWarehouses.map(w => `<option value="${w.id}">${w.name} — ${w.city} (${dt('common_' + w.freightType)})</option>`).join('')
+        : `<option value="">${dt('ship_no_warehouses')}</option>`;
+    }
+    if (canManageCategories) {
+      cachedCategories = results[canReceive ? 2 : 1];
+      renderCategoryChips();
+    }
+    renderShipmentsListCards(shipments);
+  } catch (e) { toast(e.message, true); }
+}
+
+function renderShipmentsListCards(shipments){
+  const wrap = document.getElementById('shipmentsWrap');
+  if (!shipments.length) { wrap.innerHTML = `<div class="emptyState">${dt('ship_no_shipments')}</div>`; return; }
+  wrap.innerHTML = `<table><tr><th>${dt('ship_th_code')}</th><th>${dt('ship_warehouse')}</th><th>${dt('ship_th_type')}</th><th>${dt('ship_th_customers')}</th><th>${dt('ship_th_status')}</th><th>${dt('common_actions')}</th></tr>
+    ${shipments.map(s => `<tr>
+      <td><strong>${s.shipmentCode}</strong><br><span class="smallMuted">→ ${s.destination}</span></td>
+      <td>${s.warehouse ? s.warehouse.name + ' (' + s.warehouse.city + ')' : '—'}</td>
+      <td>${s.freightType}${s.loadType ? ' · ' + s.loadType : ''}</td>
+      <td>${s.itemCount}</td>
+      <td><span class="badge amber">${s.currentStatus}</span></td>
+      <td><button class="btn btn-outline" style="padding:6px 10px; font-size:11px" onclick="renderShipmentDetail('${s.id}')">${dt('ship_view_detail')}</button></td>
+    </tr>`).join('')}</table>`;
+}
+
+async function createShipment(){
+  const body = {
+    shipmentCode: document.getElementById('newShipCode').value.trim(),
+    warehouseId: document.getElementById('newShipWarehouse').value,
+    loadType: document.getElementById('newShipLoad').value || null,
+    destination: document.getElementById('newShipDest').value.trim(),
+  };
+  if (!body.shipmentCode || !body.warehouseId || !body.destination) { toast('Please fill in shipment code, warehouse and destination.', true); return; }
+  try {
+    const shipment = await api('/admin/shipments', { method: 'POST', body: JSON.stringify(body) });
+    toast('Shipment created — now assign goods to it below.');
+    renderShipmentDetail(shipment.id);
+  } catch (e) { toast(e.message, true); }
+}
+
+async function renderShipmentDetail(id){
+  const main = document.getElementById('mainContent');
+  const canReceive = hasPerm('shipments.create');
+  const canEditMeasurements = hasPerm('shipments.edit_measurements');
+  const canUpdateStatus = hasPerm('shipments.update_status');
+  const canInvoice = hasPerm('invoices.manage');
+  const canOverride = hasPerm('invoices.override');
+
+  main.innerHTML = `<div class="pageHead"><h1>${dt('page_shipments')}</h1></div>
+    <div class="helpText" style="cursor:pointer; margin-bottom:14px" onclick="renderShipments()">${dt('ship_back_to_list')}</div>
+    <div id="shipDetailWrap"><div class="emptyState">Loading…</div></div>`;
+
+  try {
+    const shipment = await api(`/admin/shipments/${id}`);
+    const wrap = document.getElementById('shipDetailWrap');
+    wrap.innerHTML = `
+      <div class="card">
+        <div class="pageHead" style="margin-bottom:6px">
+          <div>
+            <strong style="color:var(--navy); font-size:15px">${shipment.shipmentCode}</strong>
+            <span class="smallMuted"> · ${shipment.warehouse ? shipment.warehouse.name + ' (' + shipment.warehouse.city + ')' : '—'} · ${shipment.freightType}${shipment.loadType ? ' · ' + shipment.loadType : ''} · → ${shipment.destination}</span>
+          </div>
+          <div>
+            <span class="badge amber">${shipment.currentStatus}</span>
+            ${shipment.invoicesFinalized ? `<span class="badge success" style="margin-left:6px">${dt('ship_finalized_badge')}</span>` : ''}
+            ${shipment.isClosed ? `<span class="badge neutral" style="margin-left:6px">${dt('ship_closed_badge')}</span>` : ''}
+          </div>
+        </div>
+        ${canUpdateStatus && !shipment.isClosed ? `<div class="rowActions">
+          <input class="inlineSelect" style="width:220px" id="statusInput-${shipment.id}" placeholder="${dt('ship_status_placeholder')}" />
+          <button class="btn btn-outline" style="padding:6px 10px; font-size:11.5px" onclick="addStatus('${shipment.id}')">${dt('common_add')}</button>
+          <button class="btn btn-outline" style="padding:6px 10px; font-size:11.5px" onclick="closeShipment('${shipment.id}')">${dt('ship_close_btn')}</button>
+        </div>` : ''}
+      </div>
+
+      <div class="cardTitle">${dt('ship_items_title')}</div>
+      <div class="card">
+        ${!shipment.items.length ? `<div class="emptyState">${dt('ship_no_warehouses')}</div>` : `
+        <table><tr><th>${dt('common_customer')}</th><th>${dt('ship_category')}</th><th>${dt('ship_th_weight_volume')}</th><th>${dt('ship_reference_label')}</th></tr>
+          ${shipment.items.map(it => `<tr>
+            <td>${it.customer ? it.customer.fullName + ' (' + it.customer.clientCode + ')' : '—'}</td>
+            <td>${it.category ? it.category.name : '—'}</td>
+            <td>
+              ${canEditMeasurements ? `
+                <input class="inlineSelect" style="width:60px" id="itemW-${it.id}" type="number" value="${it.weightKg}" />
+                <input class="inlineSelect" style="width:60px" id="itemV-${it.id}" type="number" step="0.01" value="${it.volumeCbm}" />
+                <button class="btn btn-outline" style="padding:4px 6px; font-size:10px" onclick="saveItemMeasurements('${shipment.id}','${it.id}')">${dt('common_save')}</button>
+              ` : `${it.weightKg} kg · ${it.volumeCbm} CBM`}
+            </td>
+            <td class="smallMuted">${it.referenceNumber || '—'}</td>
+          </tr>`).join('')}
+        </table>`}
+      </div>
+
+      ${canReceive && !shipment.isClosed ? `
+      <div class="cardTitle">${dt('ship_assign_title')}</div>
+      <div class="card">
+        <div class="helpText" style="margin-bottom:10px">${dt('ship_assign_hint')}</div>
+        <div id="unassignedStockWrap"><div class="emptyState">Loading…</div></div>
+        <div class="rowActions"><button class="btn btn-primary" style="width:auto" onclick="assignSelectedItems('${shipment.id}')">${dt('ship_assign_btn')}</button></div>
+      </div>` : ''}
+
+      ${canInvoice ? `<div id="pricingSectionWrap"></div>` : ''}
+    `;
+
+    if (canReceive && !shipment.isClosed) {
+      const unassigned = await api('/admin/receiving');
+      const stockWrap = document.getElementById('unassignedStockWrap');
+      stockWrap.innerHTML = !unassigned.length ? `<div class="emptyState">${dt('ship_no_unassigned')}</div>` :
+        unassigned.map(it => `<label style="display:flex; align-items:center; gap:8px; padding:8px 0; border-bottom:1px solid var(--line); font-weight:400;">
+          <input type="checkbox" class="assignCheckbox" value="${it.id}" style="width:auto" />
+          <span>${it.customer ? it.customer.fullName + ' (' + it.customer.clientCode + ')' : '—'} — ${it.category ? it.category.name : '—'} — ${it.weightKg}kg / ${it.volumeCbm}CBM${it.referenceNumber ? ' — ' + it.referenceNumber : ''}</span>
+        </label>`).join('');
+    }
+
+    if (canInvoice) await renderPricingSection(shipment.id, canOverride);
+  } catch (e) { toast(e.message, true); }
+}
+
+async function renderPricingSection(shipmentId, canOverride){
+  const wrap = document.getElementById('pricingSectionWrap');
+  try {
+    const shipment = await api(`/admin/shipments/${shipmentId}/pricing`);
+    const allPriced = shipment.items.length > 0 && shipment.items.every(it => it.draftTotal != null);
+    const locked = shipment.invoicesFinalized && !canOverride;
+
+    wrap.innerHTML = `
+      <div class="cardTitle">${dt('ship_pricing_title')}</div>
+      ${shipment.invoicesFinalized ? `<div class="helpText" style="margin-bottom:10px">${dt('ship_finalized_note')}</div>` : ''}
+      <div class="card">
+        ${!shipment.items.length ? `<div class="emptyState">${dt('ship_no_warehouses')}</div>` : `
+        <table><tr><th>${dt('common_customer')}</th><th>${dt('ship_th_weight_volume')}</th><th>${dt('common_amount')}</th><th>${dt('common_actions')}</th></tr>
+          ${shipment.items.map(it => `<tr>
+            <td>${it.customer ? it.customer.fullName + ' (' + it.customer.clientCode + ')' : '—'}</td>
+            <td>${it.weightKg} kg · ${it.volumeCbm} CBM</td>
+            <td>${it.draftTotal != null ? `${it.draftCurrency} ${it.draftTotal.toFixed(2)}` : `<span class="badge amber">${dt('ship_not_priced_badge')}</span>`}</td>
+            <td>${!locked ? `<button class="btn btn-outline" style="padding:5px 8px; font-size:11px" onclick="openPricingForm('${shipmentId}','${it.id}', ${it.weightKg}, ${it.volumeCbm})">${dt('ship_price_btn')}</button>` : (it.resultingInvoiceId ? `<span class="smallMuted">${dt('inv_th_number')}: ✓</span>` : '')}</td>
+          </tr>`).join('')}
+        </table>`}
+        <div id="pricingFormWrap"></div>
+      </div>
+      ${!shipment.invoicesFinalized ? `
+        <div class="helpText" style="margin-bottom:10px">${dt('ship_finalize_hint')}</div>
+        <div class="rowActions"><button class="btn btn-primary" style="width:auto" ${!allPriced ? 'disabled' : ''} onclick="finalizeInvoices('${shipmentId}')">${dt('ship_finalize_btn')}</button></div>
+      ` : ''}
+    `;
+  } catch (e) {
+    wrap.innerHTML = `<div class="permNote">${e.message}</div>`;
+  }
+}
+
+function openPricingForm(shipmentId, itemId, weightKg, volumeCbm){
+  const formWrap = document.getElementById('pricingFormWrap');
+  formWrap.innerHTML = `
+    <div class="card" style="margin-top:12px; background:var(--navy-tint)">
+      <div class="cardTitle">${dt('price_modal_title')}</div>
+      <div class="formGrid">
+        <div><label>${dt('price_unit_type')}</label>
+          <select id="priceUnitType"><option value="cbm">Volume (CBM)</option><option value="kg">Weight (kg)</option><option value="flat">${dt('price_flat')}</option></select>
+        </div>
+        <div><label>${dt('inv_unit_price')} / ${dt('price_flat')}</label><input id="priceUnitPrice" type="number" step="0.01" /></div>
+        <div><label>${dt('common_currency')}</label><select id="priceCurrency"><option value="AED">AED</option><option value="CNY">CNY</option><option value="USD">USD</option></select></div>
+        <div class="full"><label>${dt('price_extra_desc')}</label><input id="priceExtraDesc" /></div>
+        <div><label>${dt('price_extra_amount')}</label><input id="priceExtraAmount" type="number" step="0.01" /></div>
+      </div>
+      <div class="rowActions"><button class="btn btn-primary" style="width:auto" onclick="savePricing('${shipmentId}','${itemId}')">${dt('price_save_btn')}</button></div>
+    </div>`;
+}
+
+async function savePricing(shipmentId, itemId){
+  const unitType = document.getElementById('priceUnitType').value;
+  const unitPrice = document.getElementById('priceUnitPrice').value;
+  const body = {
+    unitType,
+    unitPrice: unitType !== 'flat' ? Number(unitPrice || 0) : null,
+    flatAmount: unitType === 'flat' ? Number(unitPrice || 0) : null,
+    currency: document.getElementById('priceCurrency').value,
+    extraDescription: document.getElementById('priceExtraDesc').value.trim() || null,
+    extraAmount: document.getElementById('priceExtraAmount').value ? Number(document.getElementById('priceExtraAmount').value) : null,
+  };
+  try {
+    await api(`/admin/shipments/${shipmentId}/items/${itemId}/price`, { method: 'PUT', body: JSON.stringify(body) });
+    toast('Price saved.');
+    renderPricingSection(shipmentId, hasPerm('invoices.override'));
+  } catch (e) { toast(e.message, true); }
+}
+
+async function finalizeInvoices(shipmentId){
+  try {
+    await api(`/admin/shipments/${shipmentId}/finalize-invoices`, { method: 'POST' });
+    toast('Invoices issued for every customer in this shipment.');
+    renderShipmentDetail(shipmentId);
+  } catch (e) { toast(e.message, true); }
+}
+
+async function closeShipment(shipmentId){
+  try {
+    await api(`/admin/shipments/${shipmentId}/close`, { method: 'POST' });
+    toast('Shipment closed.');
+    renderShipmentDetail(shipmentId);
+  } catch (e) { toast(e.message, true); }
+}
+
+async function assignSelectedItems(shipmentId){
+  const checked = Array.from(document.querySelectorAll('.assignCheckbox:checked')).map(el => el.value);
+  if (!checked.length) { toast('Select at least one item to assign.', true); return; }
+  try {
+    await api(`/admin/shipments/${shipmentId}/assign`, { method: 'POST', body: JSON.stringify({ itemIds: checked }) });
+    toast('Goods assigned to shipment.');
+    renderShipmentDetail(shipmentId);
+  } catch (e) { toast(e.message, true); }
+}
+
+async function saveItemMeasurements(shipmentId, itemId){
+  const weightKg = Number(document.getElementById('itemW-' + itemId).value || 0);
+  const volumeCbm = Number(document.getElementById('itemV-' + itemId).value || 0);
+  try { await api(`/admin/shipments/${shipmentId}/items/${itemId}`, { method: 'PUT', body: JSON.stringify({ weightKg, volumeCbm }) }); toast('Saved.'); renderShipmentDetail(shipmentId); }
+  catch (e) { toast(e.message, true); }
+}
+
+async function addStatus(id){
+  const input = document.getElementById('statusInput-' + id);
+  const statusLabel = input.value.trim();
+  if (!statusLabel) { toast('Type a status update first.', true); return; }
+  try { await api(`/admin/shipments/${id}/status`, { method: 'POST', body: JSON.stringify({ statusLabel }) }); toast('Status updated.'); renderShipmentDetail(id); }
+  catch (e) { toast(e.message, true); }
+}
+
+/* ---------- Customers ---------- */
+async function renderCustomers(){
+  const main = document.getElementById('mainContent');
+  main.innerHTML = `<div class="pageHead"><h1>${dt('page_customers')}</h1></div>
+    <div class="card">
+      <div class="cardTitle">${dt('cust_create_title')}</div>
+      <div class="helpText" style="margin-bottom:10px">${dt('cust_link_note')}</div>
+      <div class="formGrid">
+        <div><label>${dt('cust_full_name')}</label><input id="newCustName" /></div>
+        <div><label>${dt('common_username')}</label><input id="newCustUsername" placeholder="what they'll log in with" /></div>
+        <div><label>${dt('common_password')}</label><input id="newCustPassword" type="text" placeholder="temporary password" /></div>
+        <div><label>${dt('common_phone')}</label><input id="newCustPhone" /></div>
+        <div><label>${dt('common_email_optional')}</label><input id="newCustEmail" /></div>
+        <div class="full"><label>${dt('cust_address')}</label><input id="newCustAddress" placeholder="${dt('cust_address_placeholder')}" /></div>
+      </div>
+      <div class="rowActions"><button class="btn btn-primary" style="width:auto" onclick="createCustomer()">${dt('cust_create_btn')}</button></div>
+    </div>
+    <div id="customersTableWrap"><div class="emptyState">Loading…</div></div>`;
+
+  try {
+    const customers = await api('/admin/customers');
+    const wrap = document.getElementById('customersTableWrap');
+    if (!customers.length) { wrap.innerHTML = `<div class="emptyState">${dt('cust_no_customers')}</div>`; return; }
+    wrap.innerHTML = `<table><tr><th>${dt('cust_th_client_code')}</th><th>${dt('cust_th_name')}</th><th>${dt('cust_th_username')}</th><th>${dt('cust_th_address')}</th><th>${dt('cust_th_sales_rep')}</th><th>${dt('cust_th_status')}</th></tr>
+      ${customers.map(c => `<tr>
+        <td><strong>${c.clientCode}</strong></td><td>${c.fullName}</td><td>${c.username}</td>
+        <td>${c.address || '—'}</td>
+        <td>${c.salesRep ? c.salesRep.fullName : '—'}</td>
+        <td><span class="badge ${c.status === 'active' ? 'success' : 'red'}">${dt('badge_' + c.status)}</span></td>
+      </tr>`).join('')}</table>`;
+  } catch (e) { toast(e.message, true); }
+}
+
+async function createCustomer(){
+  const body = {
+    fullName: document.getElementById('newCustName').value.trim(),
+    username: document.getElementById('newCustUsername').value.trim(),
+    password: document.getElementById('newCustPassword').value,
+    phone: document.getElementById('newCustPhone').value.trim(),
+    email: document.getElementById('newCustEmail').value.trim(),
+    address: document.getElementById('newCustAddress').value.trim(),
+  };
+  if (!body.fullName || !body.username || !body.password) { toast('Full name, username and password are required.', true); return; }
+  try { const res = await api('/admin/customers', { method: 'POST', body: JSON.stringify(body) }); toast(`Customer created — client code: ${res.clientCode}`); renderCustomers(); }
+  catch (e) { toast(e.message, true); }
+}
+
+/* ---------- Invoices ---------- */
+async function renderInvoices(){
+  const main = document.getElementById('mainContent');
+  main.innerHTML = `<div class="pageHead"><h1>${dt('page_invoices')}</h1></div>
+    <div class="helpText" style="margin-bottom:14px">${dt('inv_generate_hint')}</div>
+    <div id="invoicesTableWrap"><div class="emptyState">Loading…</div></div>`;
+
+  try {
+    const invoices = await api('/admin/invoices');
+    const wrap = document.getElementById('invoicesTableWrap');
+    if (!invoices.length) { wrap.innerHTML = `<div class="emptyState">${dt('inv_no_invoices')}</div>`; return; }
+    wrap.innerHTML = `<table><tr><th>${dt('inv_th_number')}</th><th>${dt('inv_th_customer')}</th><th>${dt('inv_th_amount')}</th><th>${dt('inv_th_status')}</th><th>${dt('inv_th_update')}</th><th>${dt('common_actions')}</th></tr>
+      ${invoices.map(i => `<tr>
+        <td><strong>${i.invoiceNumber}</strong></td>
+        <td>${i.customer ? i.customer.fullName + ' (' + i.customer.clientCode + ')' : '—'}</td>
+        <td>${i.currency} ${i.amount.toFixed(2)}</td>
+        <td><span class="badge ${i.status === 'paid' ? 'success' : i.status === 'overdue' ? 'red' : 'amber'}">${dt('badge_' + i.status)}</span></td>
+        <td>
+          <select class="inlineSelect" onchange="updateInvoiceStatus('${i.id}', this.value)">
+            <option value="">${dt('common_change_to')}</option>
+            <option value="due">${dt('badge_due')}</option><option value="paid">${dt('badge_paid')}</option><option value="overdue">${dt('badge_overdue')}</option>
+          </select>
+        </td>
+        <td>
+          <button class="btn btn-outline" style="padding:6px 10px; font-size:11px" onclick="renderInvoiceDetail('${i.id}')">${dt('inv_open_title')}</button>
+          <button class="btn btn-outline" style="padding:6px 10px; font-size:11px" onclick="viewInvoicePdf('${i.id}')">${dt('inv_view_pdf')}</button>
+        </td>
+      </tr>`).join('')}</table>`;
+  } catch (e) { toast(e.message, true); }
+}
+
+async function renderInvoiceDetail(id){
+  const main = document.getElementById('mainContent');
+  main.innerHTML = `<div class="pageHead"><h1>${dt('page_invoices')}</h1></div>
+    <div class="helpText" style="cursor:pointer; margin-bottom:14px" onclick="renderInvoices()">${dt('ship_back_to_list')}</div>
+    <div id="invDetailWrap"><div class="emptyState">Loading…</div></div>`;
+
+  try {
+    const invoices = await api('/admin/invoices');
+    const invoice = invoices.find(i => i.id === id);
+    const canOverride = hasPerm('invoices.override');
+    const isLocked = invoice.lineItems.some(l => l.shipmentItem?.shipment?.invoicesFinalized) && !canOverride;
+
+    const wrap = document.getElementById('invDetailWrap');
+    wrap.innerHTML = `
+      <div class="card">
+        <div class="pageHead" style="margin-bottom:6px">
+          <div><strong style="color:var(--navy); font-size:15px">${invoice.invoiceNumber}</strong> <span class="smallMuted">— ${invoice.customer.fullName} (${invoice.customer.clientCode})</span></div>
+          <span class="badge ${invoice.status === 'paid' ? 'success' : invoice.status === 'overdue' ? 'red' : 'amber'}">${dt('badge_' + invoice.status)}</span>
+        </div>
+        <table><tr><th>${dt('inv_th_line_desc')}</th><th>${dt('inv_th_line_amount')}</th><th></th></tr>
+          ${invoice.lineItems.length ? invoice.lineItems.map(l => `<tr>
+            <td>${l.description}</td><td>${invoice.currency} ${l.amount.toFixed(2)}</td>
+            <td>${!isLocked ? `<button class="btn btn-outline" style="padding:4px 8px; font-size:10px" onclick="removeInvoiceLine('${invoice.id}','${l.id}')">${dt('inv_remove_line')}</button>` : ''}</td>
+          </tr>`).join('') : `<tr><td colspan="3" class="smallMuted" style="text-align:center; padding:16px">—</td></tr>`}
+        </table>
+        <div style="text-align:right; margin-top:10px; font-weight:800; color:var(--navy)">${dt('inv_total_label')}: ${invoice.currency} ${invoice.amount.toFixed(2)}</div>
+      </div>
+
+      ${isLocked ? `<div class="permNote">${dt('inv_locked_note')}</div>` : `
+      <div class="cardTitle">${dt('inv_add_manual_line')}</div>
+      <div class="card">
+        <div class="formGrid">
+          <div><label>${dt('inv_line_desc')}</label><input id="manualLineDesc" placeholder="e.g. Customs clearance fee" /></div>
+          <div><label>${dt('inv_line_amount')}</label><input id="manualLineAmount" type="number" step="0.01" /></div>
+        </div>
+        <div class="rowActions"><button class="btn btn-outline" onclick="addManualLine('${invoice.id}')">${dt('inv_add_line_btn')}</button></div>
+      </div>`}
+    `;
+  } catch (e) { toast(e.message, true); }
+}
+
+async function addManualLine(invoiceId){
+  const description = document.getElementById('manualLineDesc').value.trim();
+  const amount = Number(document.getElementById('manualLineAmount').value || 0);
+  if (!description || !amount) { toast('Enter a description and amount.', true); return; }
+  try {
+    await api(`/admin/invoices/${invoiceId}/line-items`, { method: 'POST', body: JSON.stringify({ description, amount }) });
+    toast('Charge added.');
+    renderInvoiceDetail(invoiceId);
+  } catch (e) { toast(e.message, true); }
+}
+
+async function removeInvoiceLine(invoiceId, lineId){
+  try { await api(`/admin/invoices/${invoiceId}/line-items/${lineId}`, { method: 'DELETE' }); toast('Line removed.'); renderInvoiceDetail(invoiceId); }
+  catch (e) { toast(e.message, true); }
+}
+
+function viewInvoicePdf(id){
+  window.open(`${API_URL}/admin/invoices/${id}/pdf?token=${encodeURIComponent(accessToken)}`, '_blank');
+}
+
+async function updateInvoiceStatus(id, status){
+  if (!status) return;
+  try { await api(`/admin/invoices/${id}/status`, { method: 'PUT', body: JSON.stringify({ status }) }); toast('Invoice status updated.'); renderInvoices(); }
+  catch (e) { toast(e.message, true); }
+}
+
+/* ---------- Quote requests ---------- */
+async function renderQuotes(){
+  const main = document.getElementById('mainContent');
+  main.innerHTML = `<div class="pageHead"><h1>${dt('page_quotes')}</h1></div><div id="quotesWrap"><div class="emptyState">Loading…</div></div>`;
+  try {
+    const quotes = await api('/admin/quote-requests');
+    const wrap = document.getElementById('quotesWrap');
+    if (!quotes.length) { wrap.innerHTML = `<div class="emptyState">${dt('quote_no_quotes')}</div>`; return; }
+    wrap.innerHTML = quotes.map(q => `
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <div>
+            <div class="cardTitle" style="margin-bottom:4px">${q.customer ? q.customer.fullName + ' (' + q.customer.clientCode + ')' : '—'}</div>
+            <div class="smallMuted">${q.freightType}${q.loadType ? ' · ' + q.loadType : ''} · ${q.origin} → ${q.destination}${q.approxWeight ? ' · ' + q.approxWeight : ''}</div>
+          </div>
+          <span class="badge ${q.status === 'quoted' ? 'success' : q.status === 'rejected' ? 'red' : 'amber'}">${dt('badge_' + q.status)}</span>
+        </div>
+        ${q.status === 'pending' ? `
+          <div class="rowActions">
+            <select class="inlineSelect" id="quoteCurrency-${q.id}">
+              <option value="AED">AED</option><option value="CNY">CNY</option><option value="USD">USD</option>
+            </select>
+            <input class="inlineSelect" style="width:140px" type="number" id="quoteAmt-${q.id}" placeholder="${dt('quote_amount_placeholder')}" />
+            <button class="btn btn-primary" style="width:auto" onclick="sendQuote('${q.id}')">${dt('quote_send_btn')}</button>
+          </div>` : `<div class="smallMuted" style="margin-top:10px">${dt('quote_quoted_amount_label')} ${q.quotedCurrency || ''} ${q.quotedAmount}</div>`}
+      </div>`).join('');
+  } catch (e) { toast(e.message, true); }
+}
+
+async function sendQuote(id){
+  const val = document.getElementById('quoteAmt-' + id).value;
+  const currency = document.getElementById('quoteCurrency-' + id).value;
+  if (!val) { toast('Enter an amount first.', true); return; }
+  try { await api(`/admin/quote-requests/${id}/quote`, { method: 'POST', body: JSON.stringify({ quotedAmount: Number(val), quotedCurrency: currency }) }); toast('Quote sent to customer.'); renderQuotes(); }
+  catch (e) { toast(e.message, true); }
+}
+
+/* ---------- Services ---------- */
+async function renderServices(){
+  const main = document.getElementById('mainContent');
+  main.innerHTML = `<div class="pageHead"><h1>${dt('page_services')}</h1></div>
+    <div class="card">
+      <div class="cardTitle">${dt('svc_add_title')}</div>
+      <div class="formGrid">
+        <div><label>${dt('svc_title_label')}</label><input id="newSvcTitle" placeholder="e.g. Sea Freight" /></div>
+        <div><label>${dt('ship_freight_type')}</label><select id="newSvcType"><option value="sea">${dt('common_sea')}</option><option value="air">${dt('common_air')}</option><option value="land">${dt('common_land')}</option></select></div>
+        <div class="full"><label>${dt('svc_desc_label')}</label><input id="newSvcDesc" placeholder="${dt('svc_desc_hint')}" /></div>
+      </div>
+      <div class="rowActions"><button class="btn btn-primary" style="width:auto" onclick="createService()">${dt('svc_add_btn')}</button></div>
+    </div>
+    <div id="servicesWrap"><div class="emptyState">Loading…</div></div>`;
+  try {
+    const services = await api('/admin/services');
+    const wrap = document.getElementById('servicesWrap');
+    if (!services.length) { wrap.innerHTML = `<div class="emptyState">${dt('svc_no_services')}</div>`; return; }
+    wrap.innerHTML = `<table><tr><th>${dt('svc_th_title')}</th><th>${dt('svc_th_type')}</th><th>${dt('svc_th_desc')}</th></tr>
+      ${services.map(s => `<tr><td><strong>${s.title}</strong></td><td>${s.freightType}</td><td>${s.description}</td></tr>`).join('')}</table>`;
+  } catch (e) { toast(e.message, true); }
+}
+
+async function createService(){
+  const body = { title: document.getElementById('newSvcTitle').value.trim(), freightType: document.getElementById('newSvcType').value, description: document.getElementById('newSvcDesc').value.trim() };
+  if (!body.title || !body.description) { toast('Title and description are required.', true); return; }
+  try { await api('/admin/services', { method: 'POST', body: JSON.stringify(body) }); toast('Service added.'); renderServices(); }
+  catch (e) { toast(e.message, true); }
+}
+
+/* ---------- Offers ---------- */
+async function renderOffers(){
+  const main = document.getElementById('mainContent');
+  main.innerHTML = `<div class="pageHead"><h1>${dt('page_offers')}</h1></div>
+    <div class="card">
+      <div class="cardTitle">${dt('offer_create_title')}</div>
+      <div class="formGrid">
+        <div class="full"><label>${dt('offer_title_label')}</label><input id="newOfferTitle" placeholder="e.g. Free pickup on Sea FCL this month" /></div>
+        <div class="full"><label>${dt('offer_desc_label')}</label><input id="newOfferDesc" /></div>
+        <div><label>${dt('offer_starts')}</label><input id="newOfferStart" type="date" /></div>
+        <div><label>${dt('offer_ends')}</label><input id="newOfferEnd" type="date" /></div>
+      </div>
+      <div class="rowActions"><button class="btn btn-primary" style="width:auto" onclick="createOffer()">${dt('offer_create_btn')}</button></div>
+    </div>
+    <div id="offersWrap"><div class="emptyState">Loading…</div></div>`;
+  try {
+    const offers = await api('/admin/offers');
+    const wrap = document.getElementById('offersWrap');
+    if (!offers.length) { wrap.innerHTML = `<div class="emptyState">${dt('offer_no_offers')}</div>`; return; }
+    wrap.innerHTML = offers.map(o => `
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <div><div class="cardTitle" style="margin-bottom:4px">${o.title}</div><div class="smallMuted">${o.description}</div></div>
+          <button class="btn btn-outline" style="padding:6px 10px; font-size:11.5px" onclick="toggleOffer('${o.id}', ${!o.isActive})">${o.isActive ? dt('offer_deactivate') : dt('offer_activate')}</button>
+        </div>
+      </div>`).join('');
+  } catch (e) { toast(e.message, true); }
+}
+
+async function createOffer(){
+  const body = {
+    title: document.getElementById('newOfferTitle').value.trim(),
+    description: document.getElementById('newOfferDesc').value.trim(),
+    startsAt: document.getElementById('newOfferStart').value || null,
+    endsAt: document.getElementById('newOfferEnd').value || null,
+  };
+  if (!body.title || !body.description) { toast('Title and description are required.', true); return; }
+  try { await api('/admin/offers', { method: 'POST', body: JSON.stringify(body) }); toast('Offer created — visible to customers now.'); renderOffers(); }
+  catch (e) { toast(e.message, true); }
+}
+
+async function toggleOffer(id, isActive){
+  try { await api(`/admin/offers/${id}`, { method: 'PUT', body: JSON.stringify({ isActive }) }); toast('Offer updated.'); renderOffers(); }
+  catch (e) { toast(e.message, true); }
+}
+
+/* ---------- Notifications ---------- */
+async function renderNotifications(){
+  const main = document.getElementById('mainContent');
+  main.innerHTML = `<div class="pageHead"><h1>${dt('page_notifications')}</h1></div>
+    <div class="card">
+      <div class="cardTitle">${dt('notif_send_title')}</div>
+      <div class="helpText" style="margin-bottom:10px">${dt('notif_hint')}</div>
+      <div class="formGrid">
+        <div class="full"><label>${dt('notif_title_label')}</label><input id="notifTitle" placeholder="e.g. New prices for Sea Freight" /></div>
+        <div class="full"><label>${dt('notif_message_label')}</label><input id="notifBody" placeholder="${dt('notif_message_hint')}" /></div>
+      </div>
+      <div class="rowActions"><button class="btn btn-primary" style="width:auto" onclick="sendNotification()">${dt('notif_send_btn')}</button></div>
+    </div>`;
+}
+
+async function sendNotification(){
+  const title = document.getElementById('notifTitle').value.trim();
+  const body = document.getElementById('notifBody').value.trim();
+  if (!title || !body) { toast('Title and message are required.', true); return; }
+  try { const res = await api('/admin/notifications/send', { method: 'POST', body: JSON.stringify({ title, body }) }); toast(res.sent ? `Sent to ${res.sent} customer(s).` : (res.message || 'Sent.')); }
+  catch (e) { toast(e.message, true); }
+}
+
+/* ---------- Reports ---------- */
+let reportTab = 'sales';
+let reportStartDate = '';
+let reportEndDate = '';
+let reportCustomerId = '';
+let reportDisplayCurrency = '';
+let reportExchangeRates = {}; // e.g. { AED: 0.53, USD: 0.14 } = "1 AED = 0.53 [displayCurrency]"
+const CURRENCIES_LIST = ['AED', 'CNY', 'USD'];
+
+// Converts a [{currency, total, count}] breakdown into one unified number,
+// using the exchange rates the accountant typed in. Returns null if no
+// display currency is selected (i.e. "show original currencies" mode).
+function convertToUnified(byCurrencyList){
+  if (!reportDisplayCurrency) return null;
+  let unified = 0;
+  let missing = false;
+  byCurrencyList.forEach(c => {
+    if (c.currency === reportDisplayCurrency) { unified += c.total; return; }
+    const rate = reportExchangeRates[c.currency];
+    if (rate) unified += c.total * rate;
+    else missing = true;
+  });
+  return { unified, missing };
+}
+
+function unifiedTotalHtml(byCurrencyList){
+  const result = convertToUnified(byCurrencyList);
+  if (!result) return '';
+  if (result.missing) return `<div class="stat" style="background:var(--amber-tint)"><b style="color:var(--amber)">—</b><span>${dt('rep_missing_rate')}</span></div>`;
+  return `<div class="stat" style="background:var(--navy); color:#fff"><b style="color:#fff">${reportDisplayCurrency} ${result.unified.toFixed(2)}</b><span style="color:#C7D3E4">${dt('rep_unified_total')}</span></div>`;
+}
+
+function renderCurrencyConverterControls(){
+  const otherCurrencies = CURRENCIES_LIST.filter(c => c !== reportDisplayCurrency);
+  const ratesHtml = reportDisplayCurrency ? otherCurrencies.map(c => `
+    <div><label>1 ${c} = ? ${reportDisplayCurrency}</label>
+      <input type="number" step="0.0001" id="rate-${c}" value="${reportExchangeRates[c] || ''}" oninput="onRateInput('${c}')" />
+    </div>`).join('') : '';
+  return `
+    <div class="formGrid">
+      <div><label>${dt('rep_display_currency')}</label>
+        <select id="repDisplayCurrency" onchange="onDisplayCurrencyChange()">
+          <option value="" ${reportDisplayCurrency === '' ? 'selected' : ''}>${dt('rep_display_none')}</option>
+          ${CURRENCIES_LIST.map(c => `<option value="${c}" ${c === reportDisplayCurrency ? 'selected' : ''}>${c}</option>`).join('')}
+        </select>
+      </div>
+      ${ratesHtml}
+    </div>
+    ${reportDisplayCurrency ? `<div class="helpText">${dt('rep_rate_hint')}</div>` : ''}`;
+}
+
+function onDisplayCurrencyChange(){
+  reportDisplayCurrency = document.getElementById('repDisplayCurrency').value;
+  reportExchangeRates = {};
+  renderReports();
+}
+
+function onRateInput(currency){
+  const val = Number(document.getElementById('rate-' + currency).value);
+  reportExchangeRates[currency] = val || null;
+  renderReportTabContent();
+}
+
+const REPORT_TABS = [
+  { key: 'sales', labelKey: 'rep_tab_sales' },
+  { key: 'by-employee', labelKey: 'rep_tab_by_employee' },
+  { key: 'customer-statement', labelKey: 'rep_tab_customer_statement' },
+  { key: 'full-statement', labelKey: 'rep_tab_full_statement' },
+  { key: 'profit-loss', labelKey: 'rep_tab_profit_loss' },
+];
+
+async function renderReports(){
+  const main = document.getElementById('mainContent');
+  main.innerHTML = `<div class="pageHead"><h1>${dt('page_reports')}</h1></div>
+    <div class="card">
+      <div class="formGrid">
+        <div><label>${dt('rep_date_from')}</label><input id="repFrom" type="date" value="${reportStartDate}" /></div>
+        <div><label>${dt('rep_date_to')}</label><input id="repTo" type="date" value="${reportEndDate}" /></div>
+      </div>
+      <div class="rowActions"><button class="btn btn-primary" style="width:auto" onclick="applyReportDates()">${dt('rep_apply')}</button></div>
+    </div>
+    <div class="card">
+      ${renderCurrencyConverterControls()}
+    </div>
+    <div class="tabs" id="reportTabsRow" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px;"></div>
+    <div id="reportContent"><div class="emptyState">Loading…</div></div>`;
+  renderReportTabsRow();
+  await renderReportTabContent();
+}
+
+function renderReportTabsRow(){
+  const row = document.getElementById('reportTabsRow');
+  row.innerHTML = REPORT_TABS.map(t =>
+    `<button class="btn ${t.key === reportTab ? 'btn-primary' : 'btn-outline'}" style="width:auto" onclick="switchReportTab('${t.key}')">${dt(t.labelKey)}</button>`
+  ).join('');
+}
+
+function switchReportTab(key){
+  reportTab = key;
+  renderReportTabsRow();
+  renderReportTabContent();
+}
+
+function applyReportDates(){
+  reportStartDate = document.getElementById('repFrom').value;
+  reportEndDate = document.getElementById('repTo').value;
+  renderReportTabContent();
+}
+
+function reportQuery(){
+  const params = new URLSearchParams();
+  if (reportStartDate) params.set('startDate', reportStartDate);
+  if (reportEndDate) params.set('endDate', reportEndDate);
+  return params.toString();
+}
+
+async function renderReportTabContent(){
+  const content = document.getElementById('reportContent');
+  content.innerHTML = `<div class="emptyState">Loading…</div>`;
+  try {
+    if (reportTab === 'sales') return await renderSalesReport();
+    if (reportTab === 'by-employee') return await renderByEmployeeReport();
+    if (reportTab === 'customer-statement') return await renderCustomerStatementReport();
+    if (reportTab === 'full-statement') return await renderFullStatementReport();
+    if (reportTab === 'profit-loss') return await renderProfitLossReport();
+  } catch (e) { toast(e.message, true); }
+}
+
+function exportButtons(reportPath, extraQuery){
+  const q = reportQuery() + (extraQuery ? '&' + extraQuery : '');
+  return `<div class="rowActions" style="margin:0">
+    <button class="btn btn-outline" onclick="downloadReport('${reportPath}', 'csv', '${extraQuery || ''}')">${dt('rep_export_csv')}</button>
+    <button class="btn btn-outline" onclick="downloadReport('${reportPath}', 'pdf', '${extraQuery || ''}')">${dt('rep_export_pdf')}</button>
+  </div>`;
+}
+
+function downloadReport(reportPath, format, extraQuery){
+  const q = reportQuery() + (extraQuery ? '&' + extraQuery : '');
+  window.open(`${API_URL}/admin/reports/${reportPath}/export?format=${format}&${q}&token=${encodeURIComponent(accessToken)}`, '_blank');
+}
+
+async function renderSalesReport(){
+  const data = await api(`/admin/reports/sales?${reportQuery()}`);
+  const content = document.getElementById('reportContent');
+  const statsHtml = data.byCurrency.map(c => `<div class="stat"><b>${c.currency} ${c.total.toFixed(2)}</b><span>${c.count} ${dt('rep_th_invoices')}</span></div>`).join('') + unifiedTotalHtml(data.byCurrency);
+  content.innerHTML = `
+    <div class="pageHead"><div class="statRow" style="margin:0">${statsHtml || ''}</div>${exportButtons('sales')}</div>
+    <div class="card">
+      ${!data.invoices.length ? `<div class="emptyState">${dt('rep_no_data')}</div>` : `
+      <table><tr><th>${dt('rep_th_date')}</th><th>${dt('rep_th_invoice')}</th><th>${dt('rep_th_customer')}</th><th>${dt('rep_th_shipment')}</th><th>${dt('rep_th_amount')}</th><th>${dt('rep_th_status')}</th></tr>
+        ${data.invoices.map(i => `<tr>
+          <td>${new Date(i.issuedAt).toLocaleDateString()}</td><td>${i.invoiceNumber}</td>
+          <td>${i.customer ? i.customer.fullName + ' (' + i.customer.clientCode + ')' : '—'}</td>
+          <td>${i.shipmentItem?.shipment ? i.shipmentItem.shipment.shipmentCode : '—'}</td>
+          <td>${i.currency} ${i.amount.toFixed(2)}</td>
+          <td><span class="badge ${i.status === 'paid' ? 'success' : i.status === 'overdue' ? 'red' : 'amber'}">${dt('badge_' + i.status)}</span></td>
+        </tr>`).join('')}</table>`}
+    </div>`;
+}
+
+async function renderByEmployeeReport(){
+  const data = await api(`/admin/reports/sales-by-employee?${reportQuery()}`);
+  const content = document.getElementById('reportContent');
+  const allCurrencyRows = data.flatMap(r => r.byCurrency);
+  content.innerHTML = `
+    <div class="pageHead"><div class="statRow" style="margin:0">${unifiedTotalHtml(allCurrencyRows)}</div>${exportButtons('sales-by-employee')}</div>
+    <div class="card">
+      ${!data.length ? `<div class="emptyState">${dt('rep_no_data')}</div>` : `
+      <table><tr><th>${dt('rep_th_customer')}</th><th>${dt('rep_th_invoices')}</th><th>${dt('rep_th_currency')}</th><th>${dt('rep_th_amount')}</th></tr>
+        ${data.map(r => r.byCurrency.map(c => `<tr><td>${r.fullName}</td><td>${r.invoiceCount}</td><td>${c.currency}</td><td>${c.total.toFixed(2)}</td></tr>`).join('')).join('')}
+      </table>`}
+    </div>`;
+}
+
+async function renderCustomerStatementReport(){
+  const content = document.getElementById('reportContent');
+  if (!window._reportCustomers) window._reportCustomers = await api('/admin/customers');
+  const customers = window._reportCustomers;
+
+  content.innerHTML = `
+    <div class="card">
+      <div class="formGrid"><div class="full"><label>${dt('rep_select_customer')}</label>
+        <select id="repCustomerSelect" onchange="onReportCustomerChange()">
+          <option value="">—</option>
+          ${customers.map(c => `<option value="${c.id}" ${c.id === reportCustomerId ? 'selected' : ''}>${c.fullName} (${c.clientCode})</option>`).join('')}
+        </select>
+      </div></div>
+    </div>
+    <div id="customerStatementResult"></div>`;
+
+  if (reportCustomerId) await loadCustomerStatement();
+}
+
+async function onReportCustomerChange(){
+  reportCustomerId = document.getElementById('repCustomerSelect').value;
+  if (reportCustomerId) await loadCustomerStatement();
+  else document.getElementById('customerStatementResult').innerHTML = '';
+}
+
+async function loadCustomerStatement(){
+  const data = await api(`/admin/reports/customer-statement/${reportCustomerId}?${reportQuery()}`);
+  const el = document.getElementById('customerStatementResult');
+  const statsHtml = data.byCurrency.map(c => `<div class="stat"><b>${c.currency} ${c.total.toFixed(2)}</b><span>${c.count} ${dt('rep_th_invoices')}</span></div>`).join('') + unifiedTotalHtml(data.byCurrency);
+  el.innerHTML = `
+    <div class="pageHead"><div class="statRow" style="margin:0">${statsHtml || ''}</div>${exportButtons('customer-statement/' + reportCustomerId)}</div>
+    <div class="card">
+      ${!data.invoices.length ? `<div class="emptyState">${dt('rep_no_data')}</div>` : `
+      <table><tr><th>${dt('rep_th_date')}</th><th>${dt('rep_th_invoice')}</th><th>${dt('rep_th_shipment')}</th><th>${dt('rep_th_amount')}</th><th>${dt('rep_th_status')}</th></tr>
+        ${data.invoices.map(i => `<tr>
+          <td>${new Date(i.issuedAt).toLocaleDateString()}</td><td>${i.invoiceNumber}</td>
+          <td>${i.shipmentItem?.shipment ? i.shipmentItem.shipment.shipmentCode : '—'}</td>
+          <td>${i.currency} ${i.amount.toFixed(2)}</td>
+          <td><span class="badge ${i.status === 'paid' ? 'success' : i.status === 'overdue' ? 'red' : 'amber'}">${dt('badge_' + i.status)}</span></td>
+        </tr>`).join('')}</table>`}
+    </div>`;
+}
+
+async function renderFullStatementReport(){
+  const data = await api(`/admin/reports/statement?${reportQuery()}`);
+  const content = document.getElementById('reportContent');
+  const allCurrencyRows = data.flatMap(c => c.byCurrency);
+  content.innerHTML = `
+    <div class="pageHead"><div class="statRow" style="margin:0">${unifiedTotalHtml(allCurrencyRows)}</div>${exportButtons('statement')}</div>
+    <div class="card">
+      ${!data.length ? `<div class="emptyState">${dt('rep_no_data')}</div>` : `
+      <table><tr><th>${dt('rep_th_client_code')}</th><th>${dt('rep_th_customer')}</th><th>${dt('rep_th_invoices')}</th><th>${dt('rep_th_currency')}</th><th>${dt('rep_th_amount')}</th></tr>
+        ${data.map(c => c.byCurrency.map(cur => `<tr><td>${c.clientCode}</td><td>${c.fullName}</td><td>${c.invoiceCount}</td><td>${cur.currency}</td><td>${cur.total.toFixed(2)}</td></tr>`).join('')).join('')}
+      </table>`}
+    </div>`;
+}
+
+async function renderProfitLossReport(){
+  const data = await api(`/admin/reports/profit-loss?${reportQuery()}`);
+  const content = document.getElementById('reportContent');
+  const profitAsCurrencyRows = data.byCurrency.map(c => ({ currency: c.currency, total: c.profit }));
+  content.innerHTML = `
+    <div class="pageHead"><div class="statRow" style="margin:0">${unifiedTotalHtml(profitAsCurrencyRows)}</div>${exportButtons('profit-loss')}</div>
+    <div class="card">
+      ${!data.byCurrency.length ? `<div class="emptyState">${dt('rep_no_data')}</div>` : `
+      <table><tr><th>${dt('rep_th_currency')}</th><th>${dt('rep_revenue')}</th><th>${dt('rep_purchase_cost')}</th><th>${dt('rep_expense_cost')}</th><th>${dt('rep_profit')}</th></tr>
+        ${data.byCurrency.map(c => `<tr>
+          <td>${c.currency}</td><td>${c.revenue.toFixed(2)}</td><td>${c.purchaseCost.toFixed(2)}</td><td>${c.expenseCost.toFixed(2)}</td>
+          <td><strong style="color:${c.profit >= 0 ? 'var(--success)' : 'var(--red)'}">${c.profit.toFixed(2)}</strong></td>
+        </tr>`).join('')}</table>`}
+    </div>`;
+}
+
+/* ---------- Employees (super_admin only) ---------- */
+const PERMISSION_KEYS = [
+  'customers.manage', 'shipments.create', 'shipments.update_status', 'shipments.edit_measurements',
+  'invoices.manage', 'invoices.override', 'purchases.manage', 'expenses.manage', 'reports.view',
+  'quotes.manage', 'services.manage', 'offers.manage', 'notifications.send', 'warehouse.manage',
+];
+let empPermissionDefaults = {};
+let editingEmployeeId = null;
+
+function permCheckboxesHtml(idPrefix, checkedList){
+  return `<div class="formGrid" style="grid-template-columns:1fr 1fr 1fr;">` + PERMISSION_KEYS.map(p => {
+    const key = 'perm_' + p.replace('.', '_');
+    const checked = checkedList.includes(p) ? 'checked' : '';
+    return `<label style="display:flex; align-items:center; gap:6px; font-weight:400; font-size:12.5px;">
+      <input type="checkbox" id="${idPrefix}-${p}" value="${p}" ${checked} style="width:auto" /> ${dt(key)}
+    </label>`;
+  }).join('') + `</div>`;
+}
+
+function readCheckedPermissions(idPrefix){
+  return PERMISSION_KEYS.filter(p => document.getElementById(`${idPrefix}-${p}`)?.checked);
+}
+
+function onNewEmpRoleChange(){
+  const role = document.getElementById('newEmpRole').value;
+  const defaults = empPermissionDefaults[role] || [];
+  document.getElementById('newEmpPermissions').innerHTML = permCheckboxesHtml('newEmpPerm', role === 'super_admin' ? PERMISSION_KEYS : defaults);
+}
+
+async function renderEmployees(){
+  const main = document.getElementById('mainContent');
+  main.innerHTML = `<div class="pageHead"><h1>${dt('page_employees')}</h1></div>
+    <div class="card">
+      <div class="cardTitle">${dt('emp_create_title')}</div>
+      <div class="formGrid">
+        <div><label>${dt('cust_full_name')}</label><input id="newEmpName" /></div>
+        <div><label>${dt('common_role')}</label>
+          <select id="newEmpRole" onchange="onNewEmpRoleChange()"><option value="sales">Sales</option><option value="accountant">Accountant</option><option value="warehouse">Warehouse</option><option value="super_admin">Super Admin</option></select>
+        </div>
+        <div><label>${dt('common_username')}</label><input id="newEmpUsername" /></div>
+        <div><label>${dt('common_password')}</label><input id="newEmpPassword" type="text" /></div>
+        <div><label>${dt('common_phone')} (${dt('common_optional')})</label><input id="newEmpPhone" /></div>
+        <div><label>${dt('common_email_optional')}</label><input id="newEmpEmail" /></div>
+      </div>
+      <div class="cardTitle" style="margin-top:16px">${dt('emp_permissions_title')}</div>
+      <div class="helpText" style="margin-bottom:10px">${dt('emp_permissions_hint')}</div>
+      <div id="newEmpPermissions"></div>
+      <div class="rowActions"><button class="btn btn-primary" style="width:auto" onclick="createEmployee()">${dt('emp_create_btn')}</button></div>
+    </div>
+    <div id="employeesWrap"><div class="emptyState">Loading…</div></div>`;
+  try {
+    const permsMeta = await api('/admin/employees/permissions');
+    empPermissionDefaults = permsMeta.defaultsByRole;
+    onNewEmpRoleChange();
+    await refreshEmployeesTable();
+  } catch (e) { toast(e.message, true); }
+}
+
+async function refreshEmployeesTable(){
+  const employees = await api('/admin/employees');
+  const wrap = document.getElementById('employeesWrap');
+  if (!employees.length) { wrap.innerHTML = `<div class="emptyState">${dt('emp_no_employees')}</div>`; return; }
+  wrap.innerHTML = employees.map(e => `
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <strong style="color:var(--navy)">${e.fullName}</strong>
+          <span class="badge neutral" style="margin-left:8px">${e.role.replace('_',' ')}</span>
+          <span class="badge ${e.status==='active'?'success':'red'}" style="margin-left:6px">${dt('badge_' + e.status)}</span>
+          <div class="smallMuted" style="margin-top:4px">${e.username}</div>
+        </div>
+        <button class="btn btn-outline" style="padding:6px 10px; font-size:11.5px" onclick="toggleEmployeePermEditor('${e.id}')">${dt('emp_edit_permissions')}</button>
+      </div>
+      <div id="empPermEditor-${e.id}" style="display:none; margin-top:14px;">
+        ${e.role === 'super_admin' ? `<div class="smallMuted">Super Admin always has every permission.</div>` : `
+          ${permCheckboxesHtml('empPerm-' + e.id, e.permissions)}
+          <div class="rowActions"><button class="btn btn-primary" style="width:auto" onclick="saveEmployeePermissions('${e.id}')">${dt('emp_save_permissions')}</button></div>
+        `}
+      </div>
+    </div>`).join('');
+}
+
+function toggleEmployeePermEditor(id){
+  const el = document.getElementById('empPermEditor-' + id);
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+async function saveEmployeePermissions(id){
+  const permissions = readCheckedPermissions('empPerm-' + id);
+  try {
+    await api(`/admin/employees/${id}/permissions`, { method: 'PUT', body: JSON.stringify({ permissions }) });
+    toast('Permissions updated.');
+    if (currentUser.id === id) { currentUser.permissions = permissions; localStorage.setItem('sigmaUser', JSON.stringify(currentUser)); }
+    refreshEmployeesTable();
+  } catch (e) { toast(e.message, true); }
+}
+
+async function createEmployee(){
+  const body = {
+    fullName: document.getElementById('newEmpName').value.trim(),
+    role: document.getElementById('newEmpRole').value,
+    username: document.getElementById('newEmpUsername').value.trim(),
+    password: document.getElementById('newEmpPassword').value,
+    phone: document.getElementById('newEmpPhone').value.trim(),
+    email: document.getElementById('newEmpEmail').value.trim(),
+    permissions: readCheckedPermissions('newEmpPerm'),
+  };
+  if (!body.fullName || !body.username || !body.password) { toast('Name, username and password are required.', true); return; }
+  try { await api('/admin/employees', { method: 'POST', body: JSON.stringify(body) }); toast('Employee account created.'); renderEmployees(); }
+  catch (e) { toast(e.message, true); }
+}
+
+/* ---------- Warehouse ---------- */
+let editingWarehouseId = null;
+
+async function renderWarehouse(){
+  const main = document.getElementById('mainContent');
+  main.innerHTML = `<div class="pageHead"><h1>${dt('page_warehouse')}</h1></div>
+    <div class="card">
+      <div class="cardTitle" id="whFormTitle">${dt('wh_add_title')}</div>
+      <div class="formGrid">
+        <div><label>${dt('wh_name')}</label><input id="whName" /></div>
+        <div><label>${dt('wh_freight_type')}</label><select id="whFreightType"><option value="sea">${dt('common_sea')}</option><option value="air">${dt('common_air')}</option><option value="land">${dt('common_land')}</option></select></div>
+        <div><label>${dt('wh_city')}</label><input id="whCity" placeholder="e.g. Guangzhou" /></div>
+        <div><label>${dt('wh_country')}</label><input id="whCountry" placeholder="e.g. China" /></div>
+        <div><label>${dt('wh_phone')}</label><input id="whPhone" /></div>
+        <div><label>${dt('wh_hours')}</label><input id="whHours" /></div>
+        <div class="full"><label>${dt('wh_address')}</label><input id="whAddress" /></div>
+        <div class="full"><label>${dt('wh_instructions')} <span class="smallMuted">${dt('wh_instructions_hint')}</span></label><textarea id="whInstructions" rows="4"></textarea></div>
+      </div>
+      <div class="rowActions">
+        <button class="btn btn-primary" style="width:auto" id="whSaveBtn" onclick="saveWarehouse()">${dt('wh_save_new_btn')}</button>
+        <button class="btn btn-outline" id="whCancelBtn" style="display:none" onclick="cancelWarehouseEdit()">${dt('wh_cancel_edit')}</button>
+      </div>
+    </div>
+    <div id="warehousesTableWrap"><div class="emptyState">Loading…</div></div>`;
+  await refreshWarehousesTable();
+}
+
+async function refreshWarehousesTable(){
+  try {
+    const warehouses = await api('/admin/warehouse');
+    const wrap = document.getElementById('warehousesTableWrap');
+    if (!warehouses.length) { wrap.innerHTML = `<div class="emptyState">${dt('wh_no_data')}</div>`; return; }
+    wrap.innerHTML = `<table><tr><th>${dt('wh_th_name')}</th><th>${dt('wh_th_type')}</th><th>${dt('wh_th_city')}</th><th>${dt('wh_th_status')}</th><th>${dt('common_actions')}</th></tr>
+      ${warehouses.map(w => `<tr>
+        <td>${w.name}</td>
+        <td>${dt('common_' + w.freightType)}</td>
+        <td>${w.city}${w.country ? ', ' + w.country : ''}</td>
+        <td><span class="badge ${w.isActive ? 'success' : 'red'}">${w.isActive ? dt('badge_active') : dt('badge_disabled')}</span></td>
+        <td>
+          <button class="btn btn-outline" style="padding:5px 8px; font-size:11px" onclick='editWarehouse(${JSON.stringify(w).replace(/'/g, "&#39;")})'>${dt('wh_edit_btn')}</button>
+          <button class="btn btn-outline" style="padding:5px 8px; font-size:11px" onclick="toggleWarehouseStatus('${w.id}', ${!w.isActive})">${w.isActive ? dt('offer_deactivate') : dt('offer_activate')}</button>
+        </td>
+      </tr>`).join('')}</table>`;
+  } catch (e) { toast(e.message, true); }
+}
+
+function editWarehouse(w){
+  editingWarehouseId = w.id;
+  document.getElementById('whFormTitle').textContent = dt('wh_edit_btn') + ': ' + w.name;
+  document.getElementById('whName').value = w.name || '';
+  document.getElementById('whFreightType').value = w.freightType || 'sea';
+  document.getElementById('whCity').value = w.city || '';
+  document.getElementById('whCountry').value = w.country || '';
+  document.getElementById('whPhone').value = w.phone || '';
+  document.getElementById('whHours').value = w.workingHours || '';
+  document.getElementById('whAddress').value = w.address || '';
+  document.getElementById('whInstructions').value = w.instructions || '';
+  document.getElementById('whSaveBtn').textContent = dt('wh_save_edit_btn');
+  document.getElementById('whCancelBtn').style.display = 'inline-block';
+  window.scrollTo(0, 0);
+}
+
+function cancelWarehouseEdit(){
+  editingWarehouseId = null;
+  renderWarehouse();
+}
+
+async function saveWarehouse(){
+  const body = {
+    name: document.getElementById('whName').value.trim(),
+    freightType: document.getElementById('whFreightType').value,
+    city: document.getElementById('whCity').value.trim(),
+    country: document.getElementById('whCountry').value.trim(),
+    phone: document.getElementById('whPhone').value.trim(),
+    workingHours: document.getElementById('whHours').value.trim(),
+    address: document.getElementById('whAddress').value.trim(),
+    instructions: document.getElementById('whInstructions').value.trim(),
+  };
+  if (!body.name || !body.city || !body.address) { toast('Name, city and address are required.', true); return; }
+  try {
+    if (editingWarehouseId) {
+      await api(`/admin/warehouse/${editingWarehouseId}`, { method: 'PUT', body: JSON.stringify(body) });
+    } else {
+      await api('/admin/warehouse', { method: 'POST', body: JSON.stringify(body) });
+    }
+    toast('Warehouse saved.');
+    editingWarehouseId = null;
+    renderWarehouse();
+  } catch (e) { toast(e.message, true); }
+}
+
+async function toggleWarehouseStatus(id, isActive){
+  try { await api(`/admin/warehouse/${id}/status`, { method: 'PUT', body: JSON.stringify({ isActive }) }); toast('Warehouse updated.'); refreshWarehousesTable(); }
+  catch (e) { toast(e.message, true); }
+}
+
+/* ---------- Purchases ---------- */
+async function renderPurchases(){
+  const main = document.getElementById('mainContent');
+  main.innerHTML = `<div class="pageHead"><h1>${dt('page_purchases')}</h1></div>
+    <div class="card">
+      <div class="cardTitle">${dt('purch_add_title')}</div>
+      <div class="formGrid">
+        <div><label>${dt('purch_shipment_optional')}</label><select id="newPurchShipment"><option value="">—</option></select></div>
+        <div><label>${dt('purch_date')}</label><input id="newPurchDate" type="date" /></div>
+        <div class="full"><label>${dt('purch_description')}</label><input id="newPurchDesc" /></div>
+        <div><label>${dt('purch_amount')}</label><input id="newPurchAmount" type="number" step="0.01" /></div>
+        <div><label>${dt('common_currency')}</label><select id="newPurchCurrency"><option value="AED">AED</option><option value="CNY">CNY</option><option value="USD">USD</option></select></div>
+      </div>
+      <div class="rowActions"><button class="btn btn-primary" style="width:auto" onclick="createPurchase()">${dt('purch_add_btn')}</button></div>
+    </div>
+    <div id="purchasesTableWrap"><div class="emptyState">Loading…</div></div>`;
+  try {
+    const shipments = await api('/admin/shipments');
+    document.getElementById('newPurchShipment').innerHTML += shipments.map(s => `<option value="${s.id}">${s.shipmentCode}</option>`).join('');
+    await refreshPurchasesTable();
+  } catch (e) { toast(e.message, true); }
+}
+
+async function refreshPurchasesTable(){
+  const purchases = await api('/admin/purchases');
+  const wrap = document.getElementById('purchasesTableWrap');
+  if (!purchases.length) { wrap.innerHTML = `<div class="emptyState">${dt('purch_no_data')}</div>`; return; }
+  wrap.innerHTML = `<table><tr><th>${dt('purch_th_date')}</th><th>${dt('purch_th_desc')}</th><th>${dt('purch_th_shipment')}</th><th>${dt('purch_th_amount')}</th></tr>
+    ${purchases.map(p => `<tr>
+      <td>${new Date(p.purchaseDate).toLocaleDateString()}</td>
+      <td>${p.description}</td>
+      <td>${p.shipment ? p.shipment.shipmentCode : '—'}</td>
+      <td>${p.currency} ${p.amount.toFixed(2)}</td>
+    </tr>`).join('')}</table>`;
+}
+
+async function createPurchase(){
+  const body = {
+    shipmentId: document.getElementById('newPurchShipment').value || null,
+    description: document.getElementById('newPurchDesc').value.trim(),
+    amount: Number(document.getElementById('newPurchAmount').value),
+    currency: document.getElementById('newPurchCurrency').value,
+    purchaseDate: document.getElementById('newPurchDate').value || undefined,
+  };
+  if (!body.description || !body.amount) { toast('Description and amount are required.', true); return; }
+  try { await api('/admin/purchases', { method: 'POST', body: JSON.stringify(body) }); toast('Purchase logged.'); renderPurchases(); }
+  catch (e) { toast(e.message, true); }
+}
+
+/* ---------- Expenses ---------- */
+async function renderExpenses(){
+  const main = document.getElementById('mainContent');
+  main.innerHTML = `<div class="pageHead"><h1>${dt('page_expenses')}</h1></div>
+    <div class="card">
+      <div class="cardTitle">${dt('exp_add_title')}</div>
+      <div class="formGrid">
+        <div><label>${dt('exp_category')}</label><input id="newExpCategory" placeholder="${dt('exp_category_placeholder')}" /></div>
+        <div><label>${dt('exp_date')}</label><input id="newExpDate" type="date" /></div>
+        <div class="full"><label>${dt('exp_description')}</label><input id="newExpDesc" /></div>
+        <div><label>${dt('exp_amount')}</label><input id="newExpAmount" type="number" step="0.01" /></div>
+        <div><label>${dt('common_currency')}</label><select id="newExpCurrency"><option value="AED">AED</option><option value="CNY">CNY</option><option value="USD">USD</option></select></div>
+      </div>
+      <div class="rowActions"><button class="btn btn-primary" style="width:auto" onclick="createExpense()">${dt('exp_add_btn')}</button></div>
+    </div>
+    <div id="expensesTableWrap"><div class="emptyState">Loading…</div></div>`;
+  await refreshExpensesTable();
+}
+
+async function refreshExpensesTable(){
+  try {
+    const expenses = await api('/admin/expenses');
+    const wrap = document.getElementById('expensesTableWrap');
+    if (!expenses.length) { wrap.innerHTML = `<div class="emptyState">${dt('exp_no_data')}</div>`; return; }
+    wrap.innerHTML = `<table><tr><th>${dt('exp_th_date')}</th><th>${dt('exp_th_category')}</th><th>${dt('exp_th_desc')}</th><th>${dt('exp_th_amount')}</th></tr>
+      ${expenses.map(e => `<tr>
+        <td>${new Date(e.expenseDate).toLocaleDateString()}</td>
+        <td>${e.category || '—'}</td>
+        <td>${e.description}</td>
+        <td>${e.currency} ${e.amount.toFixed(2)}</td>
+      </tr>`).join('')}</table>`;
+  } catch (e) { toast(e.message, true); }
+}
+
+async function createExpense(){
+  const body = {
+    category: document.getElementById('newExpCategory').value.trim() || null,
+    description: document.getElementById('newExpDesc').value.trim(),
+    amount: Number(document.getElementById('newExpAmount').value),
+    currency: document.getElementById('newExpCurrency').value,
+    expenseDate: document.getElementById('newExpDate').value || undefined,
+  };
+  if (!body.description || !body.amount) { toast('Description and amount are required.', true); return; }
+  try { await api('/admin/expenses', { method: 'POST', body: JSON.stringify(body) }); toast('Expense logged.'); renderExpenses(); }
+  catch (e) { toast(e.message, true); }
+}
+
+/* ---------- Boot ---------- */
+(function boot(){
+  applyDashDirection();
+  renderAllLangPickers();
+  renderLoginTexts();
+  if (!API_URL) { showSetup(); return; }
+  if (!accessToken || !currentUser) { showLogin(); return; }
+  showDashboard();
+})();
+</script>
+
+<script>
+const SIGMA_LOGO_BASE64 = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAQFBQkGCQkJCQkKCAkICgsLCgoLCwwKCwoLCgwMDAwNDQwMDAwMDw4PDAwNDw8PDw0OERERDhEQEBETERMREQ0BBAQECAYIBwgIBwgGCAYICAgHBwgICQcHBwcHCQoJCAgICAkKCQgIBggICQkJCgoJCQoICQgKCgoKCg4QDg4Od//CABEIBAAEAAMBIgACEQEDEQH/xAEkAAEBAAIDAQAAAAAAAAAAAAAAAQYHAwQFAgEBAAMBAQEAAAAAAAAAAAAAAAECAwQFBhAAAQMCBAQFAwQABwAAAAAAAgABAwQREBIhMQUTFVIUICIyQjBiYyNAQVMzQ1FhcoKgEQABAwEFAggKBwUIAwAAAAADAAIEAQUGERITECEUFyIjMUNTowcWIDIzQVJUY9MVMEBCc5PjUWFkkbMkNERxg6DD4aGx8BIAAQICBAgKBwYFAgILAAAAAQIDAAQFERIhEBMgMUFRUpEGFBUyU2FxocHRIjBCYoGSsRYjM0Bj4UNQcqLxgvBgsiQ0cHOAkKCwwMLSEwEAAQIDBQkBAQEBAQEAAAABEQAhMUFhECBRcZEwQIGhscHR8PFQYOFwgJD/2gAMAwEAAhEDEgAAAs7AIUAhZQILKAEoAAAlAhQACCgIUAABKAEoAIUAAAAAAAAAAAABKAAAAAAAASgBKAAEqFAABFABBQAAAASglhQIolEBQEoAAAlhQJQlhQJRLKAAAAAAAAAAAAAEFQUAAAAAAAEoJQBKAAhQAAAJRKAAEUEoikoAAACFSgEoCCgAlBKShKAAEoJYUCWFSgBKACFAAAAAAAAAlEoASglhQAAASgAAASgEsoAAAAAAlAAAAAAAAAAEoSgAlhZQSgEoAEFlCUAAAAASoUAACUEoAAAAlEoAARQAAAAAAIWUARQASkoEoBFCUJQAAAAAAAIUAAAAAEsFSgAAAABKAQoSgAAACURQSkUAAEoAlhZYVKAEoAABKEoACFAAAAAAlAEoAAEoAAAAAAAlAAhQAEoAAAAlEoAAAAAAACFAAIUgoJQAAABKEsoAlAAAAAAAAAAAAACUAAAAAJYUAAAAAAhQASgAIWUAAAJQAAAlCURQAIWUSgAIWUSgQWUACCgASgAAhQAEoAAIVKAAAEoAAAABKAhQAEoAAAASiWCoVKShKAAEoCFAAAAAAABLKAAAQFBLKAAASwLKSwWWCgIVBQSgBAUACUCFAlhQAAAAAAAASgSgAAAEoACFAlCUSoUBKAAAARQlAAAAhUoAAASgCWCwUEUASwVBQEFAAQVKQpKACKEolABKACFAAIVKASgQUAAABKICgAAAlEUIFSgABKAEoAIUBKEoAIUhSCwUAEsoBKABKAICyiUEoAAIUAEUSgSkUSgBKAgoCFSkUAAASgAAABFABBSFSgCUASyiUCFIUCUSyiUAAJQAlAAAAAAhSFBKAEoAShLKEFAAAAAAASiKIBQIUhQSyiUEolgoJQABCgCWFAAAAAAAAAAAigAACUSggUAAEoQoAAlAAhUpKAhUoASgCWFSgAEoAARQASiUAIFBLKCChKhQAASgSiUEolEsoiiUSygEUAShFCWCgAIWUQoIUhUoAILKSglBKCFAlEqFABFhZRKEUSwLKSgAlEsoAAABKACUJYUAACUSoVKAJYUAEoAEoAAAIUACWFBKEoSgIUBBQRQBFEUACFlhZQAQVKShAKhUFlhQJRKAEqFlgoAAAACFAASgAAAAhQAAAJQAAAAAIVBSFlEsoASgAEspKAAAAAAAhZRCiURQSkoSoVKCFAlBKIFiksoIFCKCFAlAgsoBFACUSgBKAAABKAJQAlAAEoEoIUgsoAlCBZRKCKSgSgAgUAAAAEFlhQEoQUBBUAolCUAAEolEoEpLKEFiiUJYKhUFIUAhQAEoAAIUAEsoAABKAAABKJYWUSgBKEoSwUhYpLKASgIUABKEolCUIFgUhQAACFIUEUAQoAIUACUEoAlhZYKEqFlAEoAEFSgAAAAAAABKACFShKAASwUCBQSgAIKCUJRKAEoARQBKEqFlCAUIoihBYFBLKJQSgAAgqFlEsFAASgCWFlBKEoAAASgBKAACFASgBKAAJYFhUFABCiKSgSkUSgAQUAEoAQFSkoSgAABKhQAAAShKAgoEolAgsolEqFSkoSgQVKQCoVKCFSiWFABFhYFAlABKSoUEspKEsFlCWFSiUAAAAEBYUAAhQASgAABKAEsoAlBKCCykKQFIWUSgBLKRQlgoJRKACWAoShKEFAikAsoiksoQKEUEolAAhQAASoVKEoAAAAlAhQEoSgACBUoASgCWFAAIVKJRFhYpLBUpCiWCoKhZYWUJYWKCFAAQWUAAJYWBQEpKEKQpCksF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KEFSgCUEFSksoQKgoAQFIKAEoSwLKCFIFgUSoKhQSyiUAQCwAFhSApFEKQAAFgKgAsAFlhYFlgUQoQKhYBRLAspFgKJQlhQAAAAAASygAACUAASygAACUJQAAShKJRLAsoigEoCFlhQSykUShKEKSwKEKIACoCkAsAFgFgsogLKIoIWABYolEoRQSiBSFIWUAAAAAJQAASgAAgoSoUhYpCghQASgAlEqBQBKhZYVBUFBFhUFShAKQCoWWChLBYApLKEoBALKQFlEqFQWWAolhSBQlhSFQLKSoUEUJQSggoAACFAAAAAIWBSFQFABBQJRFAACWBRFAAhZYLKCBQAlCBUpFgBUpFEBYChFEqFigEKJYUgKECwVAqCgSgAhZYCgEoAASgAAIUAAAhQJRKBKJRKEsolCUSwUAgsoAiksoBLKSoVKCFSiUQCoWAUEoQKgoEpAAVBZRLKRRCiKRYVAsoAIFEWFSkUQFQCgAAACUAEoAAAAQUAEUEolAAhQEpKAAhUogVAUCFSksBRFAEqFIFgoQCykWACoAVAAqFSiWFgLAqCyghQEFQWUICyiKEFlEBQJQAAAlhQAJQlEoCCgABKEsoSiWFABFCWFAiiUQolAhUoiiKQBQgFBBZQikKRYVAqACwAFgWBRFCURYFhUpAWBSCwKgoJRFBKSyiUSglAAAEoAAACFIUAAEUJQIUBKJQBKBBQSyhBYoAlEoSykKACBQlEspFEsCyggBYAFBAX5+vk+opLBYFiggBYolEWFgLIVYWWCwUgBQACFlAAEsFAAAAShKASoFhQCFBKBKAEFlEWBRKEsoQVKAJYFgWApKEoJQlEKShCkWACgQWKSwKCKCCoVAsoQUCKRRAV8/RLKIpFhUoAAAIUAACWFAIUAAAACUJYUAEUAEoAQUEqFIVKEBQIWUSwCkBZQlhQIolgWFgCkspFgoSwACiKCCwFEBUoikqFlgsApLAUICyiWFAIUAAEoJQAlBKACBYUAEsoQKCUASygAhQAECyhKEpKhQSoKCKJYLBQRYFCUShFEoQCwWUEABQlEoSygEABYBYT6+folgsAoiwqUShKAAJZRKJUKABLCywpCygAQoCUEKQoEUARSAoCUQCglIUllAEsFlIoSwWCkBQQoIACpSAAWCwLLAsLLBZQCFIUllIsLFJfmgCoWWAAoAlhZQSgACUAAIFAIKCUAAAJRKCUJYVKARQlEURQIUgUJYLKJRKCWFIWUQogLKShLKJYLKIApFgAsFlgspLBZQAQVKSvk+iApLAUSyksCwUEBUpKACUSoWWChKgURQAAAAlBKCFABKEBQAShKACKSglhUoSiURYFgKCFlhQShFEqFikBYoSH1AAVCkCglAECyiLBYAFlEsLKEsAFAQoAAAAAAEoiglBCgAEFgUCAolAAQpCgAllJYFgFEUEFQWUSgCVBUCggUACCgSiKEACwLLAsFQKAIsCwqUiiAVCywoEUiwVCkBQAAAlBCgASwqURRLCpQlIoQCwsoAlAQoBCkKgsBUFAgpBYFlJUKQsUiwsoShLCoACwFEUlgsACpSAALAUIKlIohRAsoSfRAVKEFSgBKACFBKBKAIoBKhSFSiBZRCksBRKCBZRAFhQIoIUhQSykqBQlCKIpKgqFSkoRYWWFlgqFSghYpLAAsh9SwsUILFAEAUiwsoRSFJYKlCCpSWUEKlJZSUBBUFlAJQlBKACUEBRKEoASwsollBBUCwqCyiUAEsFCFBCkFQpAoQFlAIoAhSAAssFQsn0SwAVAqBYWKQFAikoQAFShAoEFlAACKCBQIUAABKCFAAiiUJYVKSwWKSgQChBZYAChKSwKhQSygEAqFQUgqFAQUCABYpCkBZRLBKoiiBSApKgspLKJQgWKSykoIFlEsCwUEKAEFAASgACUSyggWBQlCWFBFhSFBFhZRKhSCoLAAWFAlgsBRAAFhZYWWFigACAqCoVAoRYAAUCWCwACkqFgVAWAAACwKgsFlAEqFBKEoEoBKAEoSwFhYpAWKSgSiUJQiiKAQoSiABYFigCKEFlEWFQWKEoShAKSgQWUJRFgWCwWKRKAAFBKSwVAKQpFEKQoQFgqAFlEoSgikoJYLKEolEUSgBKEWFBKEoQoICkKShLKRYVAqFgWKSgIFhYpLKSwFEspCksCykUSoWKJRKCUJRKCKSwVAqFgCkAqApAUgqBYKAABKf//aAAwDAQACEQMSAAAhAEAEQEoAIA0AQ0U4kgEQAQIwY4kgUUM8kAQAwUoAIAAAA8ooggAgAA0AAAwgMkEMAIgUAYQ84IgAIUAYUEQoUEAwgEEMY0sQYMMYMQkkUgAgQAkwsEYAQYgAgwoYskgwEIA4EwAQYggwggUU8YQoMkAwg88YIYQQwAgcQAEIwAIYIA4AIwgEAQAQAMUAAcswggAUYIAoAM8QAAAAAkAAwQIAAgYQggAwAI8gAIEUgwAIgIAwwQAAAkoQoMgs4E8YsoAIAEIsg44QAAQwwIwAAY4UUYAoQoAggIUoskIAUQYkQgIAU4IAAEQEkEIMQEQEUgAQAQgAgEAQkkgUAAAgkoAQ0gI4UMIEUAMoAQAAoAk0gQYAAgEIIgAEQIIUYAkwQQwIEQkAEQgMwAUgIIAAEAAIgAsIUMIIQAgAAkUkAIggAYoUkIksgAgUgAgMcc0sooAA8IoAUIsosUgEsAgA8AAQEEUAYgAEMIgYkIgUAAkAEAQQkAIQMAEwQkwAMIQ4AIAUsIwAsMAMAAMI4gEYIQAIAkAAEIAgMAAAAIcgUAAQwcIAIIgIAEAoMAEEMsgooMg4IAcoQIAAEAAwgIwgAgEgEIwAAAkAAAA0YsE4AQAoQMEAUoQAIQAQQoAUIEMkgAgAgoMAAAAAAAIYcwEEAoQIcgQAA4AUAAAkkAIAgAAYAgAQgcAAAg4gQwAEIgEIAIEUIAAgAAwAIwAcAoEgkMEAgIQIQoYQoAwAgwUgEEQ4EkIAEogQIUAQkAg0Q0wsogAQoIAAAgUcUAAAQkIIUAAgAIIAEEIEUAgggEAMAwIwwAMUQAMIg8kMUAQgAkUgAAAgMAAIgAEAEAAAAQAIMAgEMEQoAIAAogAAEAEAMQ4QwIgkIEAQIcYoEwYEAQEoIwAQgEggAA4AQAQAAgIEkoAQcQgYgYAEwAAAAMUAIMAMM4QQAAIQgIoMYQUkMEAEMMIAAcAAoAEogAAAIUQgAg4sEYoA0EAAIYQQccEAEAEEAwA4AEAMQIIUUgkwAgAMIgYAggAIAIYkIYAAsAcggAEgQQgAgAwAgkQcwYYMcAoQIAAEkQsAAIQcQIIAAAIAIAIMAIAIAU80sAA4YgIwgAMAAgA8IggAAAkAAAAggEgIQEoQkIggMI8kIEIUAA0cAQAIkAoksQUIQAAAAM0gAEAAgAEAgAoAQIEo48EQgAowUgQgAU4IIMAYwoYoMgwIYgEEIAkIIAAAAQEAIIAEcIAIAUAAEIQ0YsI4UkkUQUYEgAMQAAUcAIgY44sAQYgQkAQUAEoYgIw8Qo4MQgAAAokEUAAAgIA4AgoAQAMEMMo40MIQEoIMAoUcQEM4cYIoYMIAEYAQgAQkUAQgIAEAAw8gMQYQAAQwQQsgAY8UQAAgkwcYYsMEEoAEIUE4Q4IoEAAgEAQoQQAAAAYQAIkEAEYAkwAAMIIwEEMYQIcosIEsMIY4U0gcEY408gwIwokMAEIIIggAIAEYAAMQowwggAAAQ8MEA0sAIw04ks4YAUMskMok8UsY4UQ0AIc04kwUggI03WZ7qNhZxA944AFdgEIsgQ8ysIeOYsc8P3zk8QtrQIkkb/4MYMHZg0kcsUk4AM0Asg/DzhBCrl5phDF0I8ogemf/AI1A9P2J/nHits+TG0vBJNSwqPACj8nLPPKPDPACIIUOiw/t9/t/+9+NPDEEKYh/L92JpPLRrWc60yRvrO0EG/Ov/IO6sPXOOJLKKIIMAHANJA3RjUNJlMOEVOAK8CM5PPP1+2IaLLPLFhHUQsbAKVLJPPZWqKFhMCFBDCIFDEMAE1C0jiBNGsWoOEAMOtHehvOXT/12+K5Z7DPTSBP+hHsiXCHCCXGsLNJCIKBEBhFy8pAi1+de57cGANAELrTp7nt6vqcyaLAvy7IuJx+BdVgqP7tpL3BPNGMBDAOABT3zuWMDCVItawb0/CAFdPtPvRh5lMF/NKL5+L5f76TcYNzfM5w1ud98KFMACCNAAggg6KAOUAzn2oc0igBGLZ0kA/htFPNPtwKn19Fr+IrHcFyuxVkNRLXqOPGHAAKNNb/fO6muAX/Gc638PCPOdjZNTCOD/PLIh5xqNPTcfriPLweUWPDLCIYr/BBIEGBHWom81e58U5TD2F9P+KIPLrFLPPPLPPPPCBHPPPPDPPPPPLPPNPPPMHLOPLKPEACAAFbNCzc6RaEzesgvCAPEawGuH3a9OBLE+K1ficDe3aHQ/aPONPBIMGFKIADKLOAAA9b17Yw4+AFAIYCPKAMMT5ZbBaf9wP38uC+fFGDLDTSqdPPPPPCPHLOPJHIMDIABE0fAR/5++aAqas34FPMPqjfKJ8zfFEKPvkT5beCQtOio/PHOOFPLOMPCKMKCOAIDAIPL6fb/AP8AP7//ADNIABGA9Mjq/TNOCLRA/Iymu84aaUk4vPNOLLLNLEIJNMGBMADDAfLy08rGAACGZDZAKCNvfBw5OMGPLvH/AKw2940r1axhx3jzzyzyzQiADyijCgBAwBQAAAgBBCQBDwBxgAAggCCSgTQyBBjzzjRzTzzDjzzyjTyyyjixwBzjxAAjiAAAAQgACBSggAgCBCwQgxhABCARiQQwiBDzAxSRzzhzzzzgzzxSzCjSBiyyDhyAxBQCwQAgRyCwgxggyAQTgDAACSTQQRCgjCDDRDzDTwzzySzSxyzzyiywiAjjSDBghiQABgwhwhRAwigySgTwSACiygQTTCSQChADyzzQTjDjzzxyTwzxRxTDgyRzCyjThBQAACRAgigAgxAwCgBABBAAAghCyhgCARQCjCCDiyDhzyTjyzxzShyhgRzxhCDAhwRRDBAAADhACgAAyDSRjgQACABCTACRQwwDQygzjyRSCxzCggDyjxCQxTgQTBQQyiQDRAhSDzAQDAAgBRwQzACwBDAARzDAARSgTAhBwjTwjDxyDCRgDhATgywySAgARTgCBAiBDCwAwASBCAhCChBCwASgBigCiQgQhDyRzAgySAhywxCjDhjQygCTDQjDwzggCBjwgyQBAAwADAhAAQAiAgQhwzAQizDACQTSDyzTyTwhSQhRyySgQAwxByhgxDyhBTTDQAjBDAyAACCgxwBDDQBjDhAQhhjzBzAxBjjQyTyzzTBDADTQjxwSySBDAihCTQAgiChABQRRgDBAzhhASBwCgxgBCCjgATBCjCygTxjwDxTjxxgTxhDRyzxSwTwCQRBAiyAATTggCTQAQCAgAxDTCCgwgBTTTiCBRDiDjTiAxiyBgSQygwBjCwihjQgAAARQQBSAQgAAABBQADAAgByCQQgzARSzjxBQDhTRzijSCzzhgSzDwhiQTQizBwhRAQACiBgRBwATSADgyBACgASAAyggiQCSBhSwDTBCDCDyxAjzBCCgDzxzSixzDQhRBAChCQgBTxRAAQAgRSBghjwAhzAjigBSjBSwTgQDzwjjyxwTRSgDjijRizwRSzgRRBgABAADwjSBACABCBBQwDBjDAQTBThCBQRDjyiChQhzjSyxSixAAwiQSixCiyQjxiAhCTyCTDAQAABBgQACDwACCABiBQghDTDgRQCDCRjhgRzyQTAgAxDSxyhRBRyAQAQCCRDBDAhQgASyAzCAiRQBCiyzhgSThACyTAyAAwBDBxhwRSTADRQjDyRQBjSQzgAAAgQABQhhQgjBzRQCAQAQQxySgwSyiQRjRBBQzzTgihjxjzzTgwjDhRBjwgwgAgAQCAgRgCQQhxDizCBxDzQBgQQCiTBBhiSQiDRRSQgRgzyxRgxgBzjRBiiwgwygQiiASSgCCBAAgThBABRCgSTQxCABSDwQTQTBygDADjzxSBiTwyTRjwBijzwAyAxQABgTSQBBwgQARhBQixjAzgxTzgiyQDgDyQwSQAwBzxjjxAhhhwTiSihBxCiDxCywDgAwABygRCgTTBBQDQQDRCQSSzzQBSzDzzRRRgABySQyDTxwBSzziRwyTziySSxACQCCAgCBCCzRjxiAhBBxgDghzxxgBghDQxgggziAxBDTSghzzzAiwzjDBjgySTxCiBiBSghDCACDQCCDgTjiCjQyRxiATRiizCjiSjCRhCBBCBgwyRzjyTjwSTSAAAj/2gAMAwEAAhEDEgAAENNAFMBKAKIACPCKAEABLKIKDLBFEIKMAADCIAAEACMAEMAFHELNKMAJMACOEHGAMAEINAHAPBKHCBNMNFAELIAHBGOOEJCEIILDJIDEECGAIEDMCBOJBBMIECMHHMGGDBDAJLADEKJADEINIFLBHMHPBFAAJNJLBIPLNLNOAJKAJCALPMDHENHLLNMCKPIADPAAFFCBIJJEEAAAMBLAAAEPAFEIMMADMAMAGBAFOEMFCIGAMFHCAEGAIBFHEBOAJLCFJAAAGDODBCJKGMCMDADBFHLLDLADILBDFECLACHJICDDDCBJDPCHODCBGKOLOEAOJKAAMAJKABBDAAAAEOOPECHNJKMNGIMMEMEBIMEGHEBNOOHHMIMMBFNBKMMGDEMMEDFKABEIHFABKACBDBAMDHFBDKANLAPCAIIBCACEEAAHJLLKIGAIJEGFEIACEKFFGPAMKABLKLFILDENLLAAHFCNABHNOINAJKCHKCPKABDFOJBCDIAOMOGALNOLBACAHLEMILPBDAADCOIEGLEEEAFBDFGIOLAAEMCHMIEMEIHGJJCAKMBACCBDNNJHFLAKBCAPIHCEIBAAEICNIAIBIJOMMAAMAAAGOJHDCIGACEBBAEKMBAMAEIFAIJBFGIMBKIKDIIAPKACCENMFDAKGCFIEAAOAFABAEGAAECPAGFCAEMHAAAIOHIELFHINGIEAFCBCIAAMACEADAKBIJAAAACECEKGEKEMAIMEIIDEOBBGABKEECBCEJMHNEIMDKIEMLAAAPIIMFAAIEJGAFANFAPAAADBAFIIILBADEGAOEABFEADCIENDEFMIIMFECAAENAAGHAGKBACABEF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";
+document.querySelectorAll('.brandLogoImg').forEach(img => img.src = SIGMA_LOGO_BASE64);
+</script>
+</body>
+</html>
